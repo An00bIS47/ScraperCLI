@@ -282,7 +282,7 @@ int main (int argc, const char * argv[]) {
     
     NSMutableDictionary * attributes = [[NSMutableDictionary alloc] init];
     if (chapterPreview)
-        [attributes setObject:@YES forKey:MP42CreateChaptersPreviewTrack];
+        [attributes setObject:@YES forKey:MP42GenerateChaptersPreviewTrack];
     
     if ((sourcePath && [[NSFileManager defaultManager] fileExistsAtPath:sourcePath]) || itunesfriendly || chaptersPath || removeExisting || metadata || chapterPreview || removemetadata)
     {
@@ -463,7 +463,7 @@ int main (int argc, const char * argv[]) {
 
         else if (modified && ![mp4File hasFileRepresentation] && destinationPath) {
             if ([mp4File dataSize] > 4100000000 || _64bitchunk)
-                [attributes setObject:@YES forKey:MP42Create64BitData];
+                [attributes setObject:@YES forKey:MP4264BitData];
 
             success = [mp4File writeToUrl:[NSURL fileURLWithPath:destinationPath]
                            withAttributes:attributes
