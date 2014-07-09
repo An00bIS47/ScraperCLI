@@ -10,8 +10,7 @@
 #import "MP42FileImporter.h"
 #import "RegexKitLite.h"
 
-void print_help()
-{
+void print_help() {
     printf("usage:\n");
 
     printf("\t -dest <destination file> \n");
@@ -44,9 +43,8 @@ void print_help()
     printf("\t -version Print version \n");
 }
 
-void print_version()
-{
-    printf("\t\tversion 0.22\n");
+void print_version() {
+    printf("\t\tversion 0.26\n");
 }
 
 int main (int argc, const char * argv[]) {
@@ -87,8 +85,7 @@ int main (int argc, const char * argv[]) {
     argv += 1;
     argc--;
 
-	while ( argc > 0 && **argv == '-' )
-	{
+	while ( argc > 0 && **argv == '-' ) {
 		const char*	args = &(*argv)[1];
 		
 		argc--;
@@ -229,11 +226,12 @@ int main (int argc, const char * argv[]) {
     }
     
     if (sourcePath && (listtracks || listmetadata)) {
-        MP42File *mp4File;
+        MP42File *mp4File = nil;
 
-        if ([[NSFileManager defaultManager] fileExistsAtPath:sourcePath])
+        if ([[NSFileManager defaultManager] fileExistsAtPath:sourcePath]) {
             mp4File = [[MP42File alloc] initWithExistingFile:[NSURL fileURLWithPath:sourcePath]
                                                  andDelegate:nil];
+        }
 
         if (!mp4File) {
             printf("Error: %s\n", "the mp4 file couln't be opened.");
@@ -280,19 +278,22 @@ int main (int argc, const char * argv[]) {
         return 0;
     }
     
-    NSMutableDictionary * attributes = [[NSMutableDictionary alloc] init];
-    if (chapterPreview)
+    NSMutableDictionary *attributes = [[[NSMutableDictionary alloc] init] autorelease];
+    if (chapterPreview) {
         [attributes setObject:@YES forKey:MP42GenerateChaptersPreviewTrack];
+    }
     
-    if ((sourcePath && [[NSFileManager defaultManager] fileExistsAtPath:sourcePath]) || itunesfriendly || chaptersPath || removeExisting || metadata || chapterPreview || removemetadata)
-    {
-        NSError *outError;
-        MP42File *mp4File;
-        if ([[NSFileManager defaultManager] fileExistsAtPath:destinationPath])
+    if ((sourcePath && [[NSFileManager defaultManager] fileExistsAtPath:sourcePath]) ||
+        itunesfriendly || chaptersPath || removeExisting || metadata || chapterPreview || removemetadata) {
+        NSError *outError = nil;
+        MP42File *mp4File = nil;
+
+        if ([[NSFileManager defaultManager] fileExistsAtPath:destinationPath]) {
             mp4File = [[MP42File alloc] initWithExistingFile:[NSURL fileURLWithPath:destinationPath]
                                                  andDelegate:nil];
-        else
+        } else {
             mp4File = [[MP42File alloc] initWithDelegate:nil];
+        }
 
         if (!mp4File) {
             printf("Error: %s\n", "the mp4 file couln't be opened.");
@@ -341,7 +342,7 @@ int main (int argc, const char * argv[]) {
             MP42FileImporter *fileImporter = [[MP42FileImporter alloc] initWithURL:sourceURL
                                                                                 error:&outError];
 
-            for (MP42Track * track in [fileImporter tracks]) {
+            for (MP42Track *track in fileImporter.tracks) {
                 if (language)
                     [track setLanguage:language];
                 if (delay)
@@ -353,7 +354,9 @@ int main (int argc, const char * argv[]) {
             }
 
             modified = YES;
+            [fileImporter release];
         }
+
 
         if (chaptersPath) {
             MP42Track *oldChapterTrack = NULL;
@@ -396,7 +399,7 @@ int main (int argc, const char * argv[]) {
                 track.newLevel = videolevel;
 
                 track.isEdited = YES;
-                
+
                 modified = YES;
             }
         }
@@ -449,19 +452,19 @@ int main (int argc, const char * argv[]) {
             }
         }
 
-        if (chapterPreview)
+        if (chapterPreview) {
             modified = YES;
+        }
 
         if (itunesfriendly) {
             [mp4File organizeAlternateGroups];
             modified = YES;
         }
 
-        BOOL success;
-        if (modified && [mp4File hasFileRepresentation])
+        BOOL success = NO;
+        if (modified && [mp4File hasFileRepresentation]) {
             success = [mp4File updateMP4FileWithAttributes:attributes error:&outError];
-
-        else if (modified && ![mp4File hasFileRepresentation] && destinationPath) {
+        } else if (destinationPath) {
             if ([mp4File dataSize] > 4100000000 || _64bitchunk)
                 [attributes setObject:@YES forKey:MP4264BitData];
 
@@ -471,7 +474,9 @@ int main (int argc, const char * argv[]) {
         }
 
         if (!success) {
-            printf("Error: %s\n", [[outError localizedDescription] UTF8String]);
+            if (outError) {
+                printf("Error: %s\n", [[outError localizedDescription] UTF8String]);
+            }
             return -1;
         }
 
@@ -492,7 +497,6 @@ int main (int argc, const char * argv[]) {
         printf("Done.\n");
     }
 
-    [attributes release];
     [pool drain];
     return 0;
 }

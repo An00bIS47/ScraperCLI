@@ -19,6 +19,7 @@
 		A93464361839541E00FBC509 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A93464351839541E00FBC509 /* QuickTime.framework */; };
 		A93464381839542300FBC509 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A93464371839542300FBC509 /* Quartz.framework */; };
 		A98ED4030F59E28300885A49 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98ED4020F59E28300885A49 /* Cocoa.framework */; };
+		A9A268E9196D69A7003AFF57 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A9A268E8196D69A7003AFF57 /* libicucore.dylib */; };
 		CBE9467C12FC5510007E656A /* SublerCLI.mm in Sources */ = {isa = PBXBuildFile; fileRef = CBE9467B12FC5510007E656A /* SublerCLI.mm */; };
 /* End PBXBuildFile section */
 
@@ -79,6 +80,7 @@
 		A93464351839541E00FBC509 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/QuickTime.framework; sourceTree = DEVELOPER_DIR; };
 		A93464371839542300FBC509 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		A98ED4020F59E28300885A49 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		A9A268E8196D69A7003AFF57 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/libicucore.dylib; sourceTree = DEVELOPER_DIR; };
 		A9AC785512FE96E100A72A1E /* SublerCLI_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SublerCLI_Prefix.pch; sourceTree = "<group>"; };
 		C6859EA3029092ED04C91782 /* SublerCLI.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = SublerCLI.1; sourceTree = "<group>"; };
 		CBE9467B12FC5510007E656A /* SublerCLI.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SublerCLI.mm; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9A268E9196D69A7003AFF57 /* libicucore.dylib in Frameworks */,
 				A93464381839542300FBC509 /* Quartz.framework in Frameworks */,
 				A93464361839541E00FBC509 /* QuickTime.framework in Frameworks */,
 				A93464341839541500FBC509 /* CoreMedia.framework in Frameworks */,
@@ -140,6 +143,7 @@
 				08FB779EFE84155DC02AAC07 /* Foundation.framework */,
 				A93464311839540D00FBC509 /* libbz2.dylib */,
 				A934642F1839540600FBC509 /* libz.dylib */,
+				A9A268E8196D69A7003AFF57 /* libicucore.dylib */,
 			);
 			name = "External Frameworks and Libraries";
 			sourceTree = "<group>";
@@ -330,6 +334,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = macosx10.8;
 				USER_HEADER_SEARCH_PATHS = "";
 				VALID_ARCHS = "i386 x86_64";
@@ -357,6 +362,7 @@
 				HEADER_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = macosx10.8;
 				USER_HEADER_SEARCH_PATHS = "";
 				VALID_ARCHS = "i386 x86_64";
