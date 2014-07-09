@@ -216,7 +216,7 @@ int main (int argc, const char * argv[]) {
             else {
                 printf("Invalid input parameter: %s\n", args );
                 print_help();
-                return nil;
+                return 1;
             }
         }
 
@@ -356,9 +356,9 @@ int main (int argc, const char * argv[]) {
                     }
 
                     [mp4File addTrack:track];
+                    modified = YES;
                 }
 
-                modified = YES;
                 [fileImporter release];
             }
 
