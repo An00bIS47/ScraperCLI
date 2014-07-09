@@ -22,7 +22,7 @@ void print_help() {
     printf("\t\t -optimize Optimize \n");
     printf("\t\t -metadata {Tag Name:Tag Value} \n");
     printf("\t\t -removemetadata remove all the tags \n");
-    printf("\t\t -itunesfriendly enable tracks and create altenate groups in the iTunes friendly way\n");
+    printf("\t\t -organizegroups enable tracks and create altenate groups in the iTunes friendly way\n");
     printf("\t\t -vprofile sets the video profile to any of <baseline, main, [high]>\n");
     printf("\t\t -vlevel sets the video level <21, 31, [41]>\n");
     printf("\n");
@@ -67,7 +67,7 @@ int main (int argc, const char * argv[]) {
         BOOL listmetadata = false;
         BOOL removemetadata = false;
 
-        BOOL itunesfriendly = NO;
+        BOOL organizegroups = NO;
 
         BOOL _64bitchunk = NO;
         BOOL downmixAudio = NO;
@@ -178,9 +178,9 @@ int main (int argc, const char * argv[]) {
             {
                 removemetadata = YES;
             }
-            else if ( ! strcmp ( args, "itunesfriendly" ) )
+            else if ( ! strcmp ( args, "organizegroups" ) )
             {
-                itunesfriendly = YES;
+                organizegroups = YES;
             }
             else if ( ! strcmp ( args, "vprofile" ) )
             {
@@ -282,7 +282,7 @@ int main (int argc, const char * argv[]) {
 
         // Other options, works with -dest
         if ((sourcePath && [[NSFileManager defaultManager] fileExistsAtPath:sourcePath]) ||
-            itunesfriendly || chaptersPath || removeExisting || metadata || chapterPreview || removemetadata) {
+            organizegroups || chaptersPath || removeExisting || metadata || chapterPreview || removemetadata) {
             NSError *outError = nil;
             MP42File *mp4File = nil;
             NSMutableDictionary *attributes = [[[NSMutableDictionary alloc] init] autorelease];
@@ -466,7 +466,7 @@ int main (int argc, const char * argv[]) {
             }
 
             // Organize groups
-            if (itunesfriendly) {
+            if (organizegroups) {
                 [mp4File organizeAlternateGroups];
                 modified = YES;
             }
@@ -478,7 +478,7 @@ int main (int argc, const char * argv[]) {
                 if ([mp4File dataSize] > 4100000000 || _64bitchunk) {
                     [attributes setObject:@YES forKey:MP4264BitData];
                 }
-                
+
                 success = [mp4File writeToUrl:[NSURL fileURLWithPath:destinationPath]
                                withAttributes:attributes
                                         error:&outError];
