@@ -1,0 +1,13 @@
+//
+//  scraper_Prefix.pch
+//  SublerCLI
+//
+//  Created by michael on 15.01.15.
+//
+//
+#ifdef __OBJC__
+
+#import <Foundation/Foundation.h>
+
+#endif
+
