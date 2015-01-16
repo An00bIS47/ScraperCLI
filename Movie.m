@@ -50,8 +50,9 @@
 		_hd = false;
 		_screenformat = @"";
 		_kind = MP4MediaTypeMovie;
-		_artwork = [[NSImage alloc] init];
+		_artwork = [[MP42Image alloc] init];
 		_contentID = 0;
+		_storeID = @"";
 		
 		_actors = [[NSArray alloc] init];
 		_genres = [[NSArray alloc] init];
@@ -60,6 +61,7 @@
 		_fanarts = [[NSArray alloc] init];
 		_thumbs = [[NSArray alloc] init];
 		_countries = [[NSArray alloc] init];
+		_artworks = [[NSArray alloc] init];
 	}
 	return self;
 }

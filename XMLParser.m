@@ -49,216 +49,7 @@ NSMutableArray *directors;
 }
 
 
-//void writeXML(Movie *currentMovie, NSString *filePath)
-//{
-//	NSXMLElement *root = [[NSXMLElement alloc] initWithName:@"movie"];
-//	NSXMLDocument *xmlDoc = [NSXMLDocument documentWithRootElement:root];
-//	[xmlDoc setVersion:@"1.0"];
-//	[xmlDoc setCharacterEncoding:@"UTF-8"];
-//	[xmlDoc setStandalone:YES];
-//	
-//	//	[root addAttribute:[NSXMLNode attributeWithName:@"Attribute1" stringValue:@"Value1"]];
-//	//	[root addAttribute:[NSXMLNode attributeWithName:@"Attribute2" stringValue:@"Value2"]];
-//	//	[root addAttribute:[NSXMLNode attributeWithName:@"Attribute3" stringValue:@"Value3"]];
-//	
-//	
-//	//	NSXMLDocument *xmlDoc = [[NSXMLDocument alloc] initWithRootElement:root];
-//	
-//	//	[root addChild:[NSXMLNode commentWithStringValue:@"Hello world!"]];
-//	
-//	
-//	NSXMLElement *childElement = [[NSXMLElement alloc] initWithName:@"title" stringValue:currentMovie.title];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"originaltitle" stringValue:currentMovie.title];
-//	[root addChild:childElement];
-//	
-//	//	childElement = [[NSXMLElement alloc] initWithName:@"outline" stringValue:currentMovie.shortDescription];
-//	//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"plot" stringValue:currentMovie.plot];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"mpaa" stringValue:currentMovie.mpaa];
-//	[root addChild:childElement];
-//
-//	childElement = [[NSXMLElement alloc] initWithName:@"id" stringValue:currentMovie.imdbid];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"itunesid" stringValue:currentMovie.itunesid];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"rating" stringValue:currentMovie.rating];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"year" stringValue:currentMovie.year];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"top250" stringValue:currentMovie.top250];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"votes" stringValue:currentMovie.votes];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"outline" stringValue:currentMovie.outline];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"tagline" stringValue:currentMovie.tagline];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"runtime" stringValue:currentMovie.runtime];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"playcount" stringValue:currentMovie.playcount];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"lastplayed" stringValue:currentMovie.lastplayed];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"set" stringValue:currentMovie.set];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"premiered" stringValue:currentMovie.premiered];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"status" stringValue:currentMovie.status];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"code" stringValue:currentMovie.code];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"aired" stringValue:currentMovie.aired];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"dateadded" stringValue:currentMovie.dateadded];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"copyright" stringValue:currentMovie.copyright];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"trailer" stringValue:currentMovie.trailer];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"kind" stringValue:currentMovie.kind];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"artistname" stringValue:currentMovie.artistname];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"releasedate" stringValue:currentMovie.releasedate];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"studio" stringValue:currentMovie.studio];
-//	[root addChild:childElement];
-//	
-//	childElement = [[NSXMLElement alloc] initWithName:@"mpaaitunes" stringValue:currentMovie.mpaaiTunes];
-//	[root addChild:childElement];
-//
-//	childElement = [[NSXMLElement alloc] initWithName:@"contentadvisoryrating" stringValue:currentMovie.contentAdvisoryRating];
-//	[root addChild:childElement];
-//	
-//	// Genres
-//	for (NSString *genre in currentMovie.genres) {
-//		childElement = [[NSXMLElement alloc] initWithName:@"genre" stringValue:genre];
-//		[root addChild:childElement];
-//	}
-//	
-//	// country
-//	for (NSString *country in currentMovie.countries) {
-//		childElement = [[NSXMLElement alloc] initWithName:@"country" stringValue:country];
-//		[root addChild:childElement];
-//	}
-//	
-//	// Credits
-//	for (Actor *producer in currentMovie.producers) {
-//		childElement = [[NSXMLElement alloc] initWithName:@"credits" stringValue:producer.name];
-//		[root addChild:childElement];
-//	}
-//	
-//	// Directors
-//	for (Actor *director in currentMovie.directors) {
-//		childElement = [[NSXMLElement alloc] initWithName:@"director" stringValue:director.name];
-//		[root addChild:childElement];
-//	}
-//	
-//	// Thumbs
-//	for (Thumb *thumb in currentMovie.thumbs) {
-//		childElement = [[NSXMLElement alloc] initWithName:@"thumb" stringValue:thumb.value];
-//		
-//		if (![thumb.aspect isEqualToString:@""]) {
-//			[childElement addAttribute:[NSXMLNode attributeWithName:@"aspect" stringValue:thumb.aspect]];
-//		}
-//		if (![thumb.preview isEqualToString:@""]) {
-//			[childElement addAttribute:[NSXMLNode attributeWithName:@"preview" stringValue:thumb.preview]];
-//		}
-//		[root addChild:childElement];
-//	}
-//	
-//	// Fanarts
-//	if ([currentMovie.fanarts count] > 0) {
-//		childElement = [[NSXMLElement alloc] initWithName:@"fanart"];
-//
-//		for (Thumb *thumb in currentMovie.fanarts) {
-//			
-//			NSXMLElement *nameElement = [[NSXMLElement alloc] initWithName:@"thumb" stringValue:thumb.value];
-//			
-//			if (![thumb.aspect isEqualToString:@""]) {
-//				[nameElement addAttribute:[NSXMLNode attributeWithName:@"aspect" stringValue:thumb.aspect]];
-//			}
-//			if (![thumb.preview isEqualToString:@""]) {
-//				[nameElement addAttribute:[NSXMLNode attributeWithName:@"preview" stringValue:thumb.preview]];
-//			}
-//			[childElement addChild:nameElement];
-//			
-//		}
-//		[root addChild:childElement];
-//	}
-//
-//	
-//	// Actors
-//	for (Actor *actor in currentMovie.actors) {
-//		childElement = [[NSXMLElement alloc] initWithName:@"actor"];
-//
-//		NSXMLElement *nameElement = [[NSXMLElement alloc] initWithName:@"name" stringValue:actor.name];
-//		[childElement addChild:nameElement];
-//
-//		NSXMLElement *roleElement = [[NSXMLElement alloc] initWithName:@"role" stringValue:actor.role];
-//		[childElement addChild:roleElement];
-//		
-//		NSXMLElement *orderElement = [[NSXMLElement alloc] initWithName:@"order" stringValue:actor.order];
-//		[childElement addChild:orderElement];
-//
-//		NSXMLElement *thumbElement = [[NSXMLElement alloc] initWithName:@"thumb" stringValue:actor.thumb];
-//		[childElement addChild:thumbElement];
-//		
-//		[root addChild:childElement];
-//	}
-//	
-////	NSXMLElement *childElement2 = [[NSXMLElement alloc] initWithName:@"ChildElement2"];
-////	[childElement2 addAttribute:[NSXMLNode attributeWithName:@"ChildAttribute2.1" stringValue:@"Value2.1"]];
-////	[childElement2 setStringValue:@"ChildValue2.1"];
-////	[root addChild:childElement2];
-//	
-//	
-//
-//	
-////	NSLog(@"XML Document\n%@", xmlDoc);//till this art code runs fine.
-//	NSData *xmlData = [xmlDoc XMLDataWithOptions:NSXMLNodePrettyPrint];
-//	
-//	[[NSFileManager defaultManager] createFileAtPath:filePath contents:xmlData attributes:nil];
-//	
-////	file = [NSFileHandle fileHandleForUpdatingAtPath: filePath];
-////	//set writing path to file
-////	if (file == nil) //check file present or not in file
-////		NSLog(@"Failed to open file");
-////	//[file seekToFileOffset: 6];
-////	//object pointer initialy points the offset as 6 position in file
-////	[file writeData: xmlData];
-////	//writing data to new file
-////	[file closeFile];
-//	
-//	//	[xmlData writeToFile:@"/Users/halen/Documents/project3/xmlsample.xml" atomically:YES];
-//}
+
 
 
 -(Movie *) loadXMLByPath:(NSString *)pathString;
@@ -302,8 +93,13 @@ NSMutableArray *directors;
 
 - (void) parser:(NSXMLParser *)parser didStartElement:(NSString *)elementname namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict
 {
-	if ([elementname isEqualToString:@"movie"]) {
+	if ([elementname isEqualToString:@"movie"] && [attributeDict count] == 0 ) {
 		currentMovie = [[Movie alloc] init];
+		depth = 0;
+	} else if ([elementname isEqualToString:@"movie"] && [attributeDict count] != 0 ) {
+		depth = 1;
+	} else if ([elementname isEqualToString:@"recommendations"]) {
+		depth = 1;
 	} else if ([elementname isEqualToString:@"actor"]) {
 		currentActor = [[Actor alloc] init];
 		depth = 1;
@@ -486,7 +282,10 @@ NSMutableArray *directors;
 	}
 	if ([elementname isEqualToString:@"kind"])
 	{
-		currentMovie.kind = currentNodeContent;
+		if ([currentNodeContent isEqualToString:@"9"]) {
+			currentMovie.kind = MP4MediaTypeMovie;
+		}
+
 		currentNodeContent = nil;
 	}
 	if ([elementname isEqualToString:@"artistname"])
@@ -497,11 +296,22 @@ NSMutableArray *directors;
 	if ([elementname isEqualToString:@"releasedate"])
 	{
 		currentMovie.releasedate = currentNodeContent;
+		currentMovie.year = [currentMovie.releasedate substringWithRange: NSMakeRange (0, 4)];
 		currentNodeContent = nil;
 	}
 	if ([elementname isEqualToString:@"studio"])
 	{
 		currentMovie.studio = currentNodeContent;
+		currentNodeContent = nil;
+	}
+	if ([elementname isEqualToString:@"contentid"])
+	{
+		currentMovie.contentID = (long)currentNodeContent;
+		currentNodeContent = nil;
+	}
+	if ([elementname isEqualToString:@"storeid"])
+	{
+		currentMovie.storeID = currentNodeContent;
 		currentNodeContent = nil;
 	}
 	if ([elementname isEqualToString:@"contentadvisoryrating"])
@@ -603,8 +413,11 @@ NSMutableArray *directors;
 	{
 		depth=0;
 	}
-
-	if ([elementname isEqualToString:@"movie"])
+	if ([elementname isEqualToString:@"recommendations"])
+	{
+		depth=0;
+	}
+	if (([elementname isEqualToString:@"movie"]) && (depth == 0))
 	{
 
 		currentMovie.actors = actors;

@@ -32,6 +32,8 @@
 		4C1B68E31A67ED3800A1CABB /* Thumb.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1B687A1A67E0C800A1CABB /* Thumb.m */; };
 		4C1B68E41A67ED5900A1CABB /* XPathQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1B686A1A67E09B00A1CABB /* XPathQuery.m */; };
 		4C1B68E51A67ED5C00A1CABB /* XMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1B68681A67E09B00A1CABB /* XMLParser.m */; };
+		4C491B2B1A6890A80065BA07 /* ArtworkHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C491B291A6890A80065BA07 /* ArtworkHelper.h */; };
+		4C491B2C1A6890A80065BA07 /* ArtworkHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C491B2A1A6890A80065BA07 /* ArtworkHelper.m */; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		8DD76F9F0486AA7600D96B5E /* SublerCLI.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* SublerCLI.1 */; };
 		A910B63D1839525C0064028F /* libmp42.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A910B63C1839525C0064028F /* libmp42.a */; };
@@ -133,6 +135,9 @@
 		4C1B68AA1A67E67A00A1CABB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		4C1B68C31A67E79700A1CABB /* scraper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scraper; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C1B68D11A67EA9800A1CABB /* scraper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = scraper.mm; sourceTree = "<group>"; };
+		4C491B291A6890A80065BA07 /* ArtworkHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArtworkHelper.h; sourceTree = "<group>"; };
+		4C491B2A1A6890A80065BA07 /* ArtworkHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtworkHelper.m; sourceTree = "<group>"; };
+		4C6689361A68D3CF00C56449 /* Ratings.string.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Ratings.string.txt; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* SublerCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SublerCLI; sourceTree = BUILT_PRODUCTS_DIR; };
 		A910B59318394D4A0064028F /* MP42Foundation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MP42Foundation.xcodeproj; path = MP42Foundation/MP42Foundation.xcodeproj; sourceTree = "<group>"; };
 		A9346429183953EB00FBC509 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -287,6 +292,8 @@
 				4C1B68731A67E0C800A1CABB /* Movie.m */,
 				4C1B68791A67E0C800A1CABB /* Thumb.h */,
 				4C1B687A1A67E0C800A1CABB /* Thumb.m */,
+				4C491B291A6890A80065BA07 /* ArtworkHelper.h */,
+				4C491B2A1A6890A80065BA07 /* ArtworkHelper.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -315,6 +322,7 @@
 			children = (
 				4C1B68741A67E0C800A1CABB /* Readme.md */,
 				C6859EA3029092ED04C91782 /* SublerCLI.1 */,
+				4C6689361A68D3CF00C56449 /* Ratings.string.txt */,
 			);
 			name = Documentation;
 			sourceTree = "<group>";
@@ -326,6 +334,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C491B2B1A6890A80065BA07 /* ArtworkHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,6 +445,7 @@
 			files = (
 				4C1B68D31A67EA9C00A1CABB /* scraper.mm in Sources */,
 				4C1B68E31A67ED3800A1CABB /* Thumb.m in Sources */,
+				4C491B2C1A6890A80065BA07 /* ArtworkHelper.m in Sources */,
 				4C1B68E21A67ED3600A1CABB /* Movie.m in Sources */,
 				4C1B68E11A67ED3400A1CABB /* Actor.m in Sources */,
 				4C1B68E41A67ED5900A1CABB /* XPathQuery.m in Sources */,

@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "Actor.h"
 #import "Thumb.h"
+#import "MP42File.h"
+#import "MP42FileImporter.h"
 #import <AppKit/AppKit.h>
 
 typedef enum {
@@ -55,9 +57,11 @@ typedef enum {
 @property					  BOOL		hd;					//					|	hd
 @property (nonatomic, retain) NSString* screenformat;		//					|	screenFormat
 @property					  NSInteger contentID;			//					|	cnID
+@property (nonatomic, retain) NSString* storeID;			//					|	storeID
 @property					  MP4MediaType kind;			//					|	kind
-@property (nonatomic, retain) NSImage*	artwork;			//					|	artwork
+@property (nonatomic, retain) MP42Image	*artwork;			//					|	artwork
 // end to implement
+@property (nonatomic, retain) NSArray* artworks;			//					|	artworks as MP42Image
 
 @property (nonatomic, retain) NSArray* genres;				//		genre		|	primaryGenreName
 //	<genre></genre>

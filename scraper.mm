@@ -14,11 +14,13 @@
 #import "MP42File.h"
 #import "MP42FileImporter.h"
 #import "RegexKitLite.h"
+#import "JSONKit.h"
 
 #define APPNAME					"scraper"
 #define APPVERSION				0.1
 #define PROGRESSBAR_MAX_CALLS	1000
 #define PROGRESSBAR_WIDTH		40
+#define DEBUG 1
 
 XMLParser *xmlParser;
 BOOL			verbose			= false;
@@ -165,6 +167,46 @@ static void progressBar(int x, int n, int r, int w, NSString* aString, NSString*
 	if ((ratio*100) == 100) {
 		printf("%s OK\n",[aString UTF8String]);
 	}
+}
+
+
+NSInteger indexOfITunesCodes(NSString *aRatingString, NSArray *iTunesCodes) {
+	
+	NSString *splitElements  = @"\\|";
+	NSArray *ratingItems = [aRatingString componentsSeparatedByRegex:splitElements];
+	NSInteger indexForItunesCode = 0;
+	
+	if ([ratingItems count] > 2){
+		NSInteger counter = 0;
+		
+		for (NSString *curiTunesCode in iTunesCodes) {
+			if ([curiTunesCode isEqualToString:aRatingString]) {
+				indexForItunesCode = counter;
+				return indexForItunesCode;
+			}
+			counter++;
+		}
+		
+		
+	} else {
+		//ratingiTunesCode = nil;
+		NSInteger counter = 0;
+		for (NSString *curiTunesCode in iTunesCodes) {
+				NSString *splitElements  = @"\\|";
+				NSArray *ratingItems = [curiTunesCode componentsSeparatedByRegex:splitElements];
+				
+				//de-movie|Ab 12 Jahren|200|
+				if ([[ratingItems objectAtIndex:1] isEqualToString:aRatingString]) {
+					indexForItunesCode = counter;
+					return indexForItunesCode;
+				}
+			
+			counter++;
+		}
+		
+	}
+	
+	return indexForItunesCode;
 }
 
 NSArray* getAllFiles(NSString *path, NSString *aExt){
@@ -317,7 +359,227 @@ void removeData(NSString *inputFilename){
 	
 }
 
-
+void writeXML(Movie *currentMovie, NSString *filePath)
+{
+	NSXMLElement *root = [[NSXMLElement alloc] initWithName:@"movie"];
+	NSXMLDocument *xmlDoc = [NSXMLDocument documentWithRootElement:root];
+	[xmlDoc setVersion:@"1.0"];
+	[xmlDoc setCharacterEncoding:@"UTF-8"];
+	[xmlDoc setStandalone:YES];
+	
+	//	[root addAttribute:[NSXMLNode attributeWithName:@"Attribute1" stringValue:@"Value1"]];
+	//	[root addAttribute:[NSXMLNode attributeWithName:@"Attribute2" stringValue:@"Value2"]];
+	//	[root addAttribute:[NSXMLNode attributeWithName:@"Attribute3" stringValue:@"Value3"]];
+	
+	
+	//	NSXMLDocument *xmlDoc = [[NSXMLDocument alloc] initWithRootElement:root];
+	
+	//	[root addChild:[NSXMLNode commentWithStringValue:@"Hello world!"]];
+	
+	
+	NSXMLElement *childElement = [[NSXMLElement alloc] initWithName:@"title" stringValue:currentMovie.title];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"originaltitle" stringValue:currentMovie.title];
+	[root addChild:childElement];
+	
+	//	childElement = [[NSXMLElement alloc] initWithName:@"outline" stringValue:currentMovie.shortDescription];
+	//	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"plot" stringValue:currentMovie.plot];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"mpaa" stringValue:currentMovie.mpaa];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"id" stringValue:currentMovie.imdbid];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"itunesid" stringValue:currentMovie.itunesid];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"storeid" stringValue:currentMovie.storeID];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"contentid" stringValue: [NSString stringWithFormat:@"%li", (long)currentMovie.contentID]];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"rating" stringValue:currentMovie.rating];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"year" stringValue:currentMovie.year];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"top250" stringValue:currentMovie.top250];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"votes" stringValue:currentMovie.votes];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"outline" stringValue:currentMovie.outline];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"tagline" stringValue:currentMovie.tagline];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"runtime" stringValue:currentMovie.runtime];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"playcount" stringValue:currentMovie.playcount];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"lastplayed" stringValue:currentMovie.lastplayed];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"set" stringValue:currentMovie.set];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"premiered" stringValue:currentMovie.premiered];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"status" stringValue:currentMovie.status];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"code" stringValue:currentMovie.code];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"aired" stringValue:currentMovie.aired];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"dateadded" stringValue:currentMovie.dateadded];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"copyright" stringValue:currentMovie.copyright];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"trailer" stringValue:currentMovie.trailer];
+	[root addChild:childElement];
+	
+	if (currentMovie.kind == MP4MediaTypeMovie) {
+		childElement = [[NSXMLElement alloc] initWithName:@"kind" stringValue:@"feature-movie"];
+		[root addChild:childElement];
+	} else if (currentMovie.kind == MP4MediaTypeTvShow) {
+		childElement = [[NSXMLElement alloc] initWithName:@"kind" stringValue:@"feature-???"];
+		[root addChild:childElement];
+	}
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"artistname" stringValue:currentMovie.artistname];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"releasedate" stringValue:currentMovie.releasedate];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"studio" stringValue:currentMovie.studio];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"mpaaitunes" stringValue:currentMovie.mpaaiTunes];
+	[root addChild:childElement];
+	
+	childElement = [[NSXMLElement alloc] initWithName:@"contentadvisoryrating" stringValue:currentMovie.contentAdvisoryRating];
+	[root addChild:childElement];
+	
+	// Genres
+	for (NSString *genre in currentMovie.genres) {
+		childElement = [[NSXMLElement alloc] initWithName:@"genre" stringValue:genre];
+		[root addChild:childElement];
+	}
+	
+	// country
+	for (NSString *country in currentMovie.countries) {
+		childElement = [[NSXMLElement alloc] initWithName:@"country" stringValue:country];
+		[root addChild:childElement];
+	}
+	
+	// Credits
+	for (Actor *producer in currentMovie.producers) {
+		childElement = [[NSXMLElement alloc] initWithName:@"credits" stringValue:producer.name];
+		[root addChild:childElement];
+	}
+	
+	// Directors
+	for (Actor *director in currentMovie.directors) {
+		childElement = [[NSXMLElement alloc] initWithName:@"director" stringValue:director.name];
+		[root addChild:childElement];
+	}
+	
+	// Thumbs
+	for (Thumb *thumb in currentMovie.thumbs) {
+		childElement = [[NSXMLElement alloc] initWithName:@"thumb" stringValue:thumb.value];
+		
+		if (![thumb.aspect isEqualToString:@""]) {
+			[childElement addAttribute:[NSXMLNode attributeWithName:@"aspect" stringValue:thumb.aspect]];
+		}
+		if (![thumb.preview isEqualToString:@""]) {
+			[childElement addAttribute:[NSXMLNode attributeWithName:@"preview" stringValue:thumb.preview]];
+		}
+		[root addChild:childElement];
+	}
+	
+	// Fanarts
+	if ([currentMovie.fanarts count] > 0) {
+		childElement = [[NSXMLElement alloc] initWithName:@"fanart"];
+		
+		for (Thumb *thumb in currentMovie.fanarts) {
+			
+			NSXMLElement *nameElement = [[NSXMLElement alloc] initWithName:@"thumb" stringValue:thumb.value];
+			
+			if (![thumb.aspect isEqualToString:@""]) {
+				[nameElement addAttribute:[NSXMLNode attributeWithName:@"aspect" stringValue:thumb.aspect]];
+			}
+			if (![thumb.preview isEqualToString:@""]) {
+				[nameElement addAttribute:[NSXMLNode attributeWithName:@"preview" stringValue:thumb.preview]];
+			}
+			[childElement addChild:nameElement];
+			
+		}
+		[root addChild:childElement];
+	}
+	
+	
+	// Actors
+	for (Actor *actor in currentMovie.actors) {
+		childElement = [[NSXMLElement alloc] initWithName:@"actor"];
+		
+		NSXMLElement *nameElement = [[NSXMLElement alloc] initWithName:@"name" stringValue:actor.name];
+		[childElement addChild:nameElement];
+		
+		NSXMLElement *roleElement = [[NSXMLElement alloc] initWithName:@"role" stringValue:actor.role];
+		[childElement addChild:roleElement];
+		
+		NSXMLElement *orderElement = [[NSXMLElement alloc] initWithName:@"order" stringValue:actor.order];
+		[childElement addChild:orderElement];
+		
+		NSXMLElement *thumbElement = [[NSXMLElement alloc] initWithName:@"thumb" stringValue:actor.thumb];
+		[childElement addChild:thumbElement];
+		
+		[root addChild:childElement];
+	}
+	
+	//	NSXMLElement *childElement2 = [[NSXMLElement alloc] initWithName:@"ChildElement2"];
+	//	[childElement2 addAttribute:[NSXMLNode attributeWithName:@"ChildAttribute2.1" stringValue:@"Value2.1"]];
+	//	[childElement2 setStringValue:@"ChildValue2.1"];
+	//	[root addChild:childElement2];
+	
+	
+	
+	
+	//	NSLog(@"XML Document\n%@", xmlDoc);//till this art code runs fine.
+	NSData *xmlData = [xmlDoc XMLDataWithOptions:NSXMLNodePrettyPrint];
+	
+	[[NSFileManager defaultManager] createFileAtPath:filePath contents:xmlData attributes:nil];
+	
+	//	file = [NSFileHandle fileHandleForUpdatingAtPath: filePath];
+	//	//set writing path to file
+	//	if (file == nil) //check file present or not in file
+	//		NSLog(@"Failed to open file");
+	//	//[file seekToFileOffset: 6];
+	//	//object pointer initialy points the offset as 6 position in file
+	//	[file writeData: xmlData];
+	//	//writing data to new file
+	//	[file closeFile];
+	
+	//	[xmlData writeToFile:@"/Users/halen/Documents/project3/xmlsample.xml" atomically:YES];
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Main
@@ -334,10 +596,13 @@ int main(int argc, const char * argv[]) {
 		NSString		*inputDir		= NULL;
 		NSString		*inputParentDir	= NULL;
 		NSString		*inputTitle		= NULL;
-		NSString		*inputCC		= @"us";
+		NSString		*inputCC		= @"de";
+		
+		NSString		*artworkFilename	= NULL;
+		NSString		*fanartFilename		= NULL;
 		
 		NSNumber		*inputLimit		=	@1;
-		int				fileCounter		=	0;
+		int				fileCounter		=	1;
 		
 		NSMutableArray	*m4vFiles = [[NSMutableArray alloc] init];
 		
@@ -355,6 +620,8 @@ int main(int argc, const char * argv[]) {
 		BOOL			extract			= false;
 		
 		NSUInteger		noOfFiles		= 1;
+		
+		NSInteger		curRating		= 0;
 		
 		NSMutableArray *skippedMovies	= [[NSMutableArray alloc] init];
 		NSMutableArray *processedMovies	= [[NSMutableArray alloc] init];
@@ -379,6 +646,10 @@ int main(int argc, const char * argv[]) {
 		
 		argv += 1;
 		argc--;
+#ifdef DEBUG
+		printf("DEBUG MODE enabled!\n");
+		printf("DEBUG - Parameter: \n");
+#endif
 		
 		// Handle args
 		while (argc > 0 && **argv == '-') {
@@ -386,10 +657,19 @@ int main(int argc, const char * argv[]) {
 			
 			argc--;
 			argv++;
+
+#ifdef DEBUG
+			printf("-%s ",args);
+			fflush(stdout);
+#endif
 			
 			if (( ! strcmp ( args, "input" )) || ( ! strcmp ( args, "i" )) ) {
 				inputFilename = @(*argv++);
 				argc--;
+#ifdef DEBUG
+				printf("%s ",[inputFilename UTF8String]);
+				fflush(stdout);
+#endif
 				
 				BOOL isDir = NO;
 				if([[NSFileManager defaultManager] fileExistsAtPath:inputFilename isDirectory:&isDir] && isDir){
@@ -419,12 +699,20 @@ int main(int argc, const char * argv[]) {
 			else if (( ! strcmp ( args, "nfo" )) || ( ! strcmp ( args, "n" )) ) {
 				nfoFilename = @(*argv++);
 				argc--;
+#ifdef DEBUG
+				printf("%s ",[nfoFilename UTF8String]);
+				fflush(stdout);
+#endif
 				if (verbose) {
 					
 				}
 			}
 			else if (( ! strcmp ( args, "title" )) || ( ! strcmp ( args, "T" )) ) {
 				inputTitle = @(*argv++);
+#ifdef DEBUG
+				printf("%s ",[inputTitle UTF8String]);
+				fflush(stdout);
+#endif
 				argc--;
 			}
 			else if (( ! strcmp ( args, "limit" )) || ( ! strcmp ( args, "L" )) ) {
@@ -433,14 +721,26 @@ int main(int argc, const char * argv[]) {
 				[f setNumberStyle:NSNumberFormatterDecimalStyle];
 				inputLimit = [f numberFromString:@(*argv++)];
 				argc--;
+#ifdef DEBUG
+				printf("%ld ",[inputLimit longValue]);
+				fflush(stdout);
+#endif
 			}
 			else if (( ! strcmp ( args, "country" )) || ( ! strcmp ( args, "c" )) ) {
 				inputCC = @(*argv++);
 				argc--;
+#ifdef DEBUG
+				printf("%s ",[inputCC UTF8String]);
+				fflush(stdout);
+#endif
 			}
 			else if (( ! strcmp ( args, "extract" )) || ( ! strcmp ( args, "e" )) ) {
 				pngFilename = @(*argv++);
 				argc--;
+#ifdef DEBUG
+				printf("%s ",[pngFilename UTF8String]);
+				fflush(stdout);
+#endif
 			}
 			else if (( ! strcmp ( args, "extractdefault" )) || ( ! strcmp ( args, "ed" )) ) {
 				extract = YES;
@@ -494,6 +794,9 @@ int main(int argc, const char * argv[]) {
 				return 1;
 			}
 		}
+#ifdef DEBUG
+		printf("\n");
+#endif
 		
 		//		printf("Searching Movie for movie: ");
 		//		fflush(stdout);
@@ -566,12 +869,14 @@ int main(int argc, const char * argv[]) {
 			
 			NSString* fileName = [[inputFullname lastPathComponent] stringByDeletingPathExtension];
 			
-			
+			if(!unattended) {
+				printf("================== %s ==================\n", [fileName UTF8String]);
+			}
 			
 			nfoFilename = [NSString stringWithFormat:@"%@/%@.nfo", inputDir, fileName];
 			NSString *nfoFilename2 = [NSString stringWithFormat:@"%@/movie.nfo", inputDir];
 			
-			NSString *artworkFilename = [NSString stringWithFormat:@"%@/%@-poster.png", inputDir, fileName];
+
 			
 			NSString *nfoTarget = nfoFilename;
 			//			if (verbose) {
@@ -592,32 +897,46 @@ int main(int argc, const char * argv[]) {
 			}
 			
 			if (!mp4File) {
-				printf("Error: %s\n", "the mp4 file couln't be opened.");
-				return -1;
+				if (!unattended) {
+					printf("Error: %s\n", "the mp4 file couln't be opened.");
+					return -1;
+				}
+				[skippedMovies addObject:currentMovie];
+				skip=YES;
 			}
-			if (!ignoreTags) {
-				if (!verbose) {
-					if (noOfFiles == 1) {
-						printf("Reading tags...\n");
-					}
+			if ((!ignoreTags) || (listmetadata)) {
+				if (!unattended) {
+					printf("Reading tags...");
 				}
 				
 				NSArray * availableMetadata = [[mp4File metadata] availableMetadata];
 				NSDictionary * tagsDict = [[mp4File metadata] tagsDict];
 				
+				if (!unattended) {
+					printf(" OK\n");
+				}
+				
 				for (NSString* key in availableMetadata) {
 					NSString* tag = [tagsDict valueForKey:key];
 					if (tag) {
-						if ([tag isKindOfClass:[NSString class]])
-							printf("%s: %s\n", [key UTF8String], [tag UTF8String]);
-						if ([tag isKindOfClass:[NSNumber class]])
-							printf("%s: %ld\n", [key UTF8String], (long)[tag integerValue]);
-						
+						if ([tag isKindOfClass:[NSString class]]) {
+							if ((verbose) || (listmetadata)) {
+								printf("%s: %s\n", [key UTF8String], [tag UTF8String]);
+							}
+						}
+						if ([tag isKindOfClass:[NSNumber class]]) {
+							if ((verbose) || (listmetadata)) {
+								printf("%s: %ld\n", [key UTF8String], (long)[tag integerValue]);
+							}
+						}
 						if ([key isEqualToString:@"Name"])
 							currentMovie.title = tag;
 						
 						if ([key isEqualToString:@"Artist"])
 							currentMovie.artistname = tag;
+						
+						if ([key isEqualToString:@"Rating"])
+							curRating = [tag integerValue];
 						
 						if ([key isEqualToString:@"Genre"]) {
 							NSMutableArray *curGenres = [[NSMutableArray alloc] init];
@@ -625,8 +944,14 @@ int main(int argc, const char * argv[]) {
 							currentMovie.genres = curGenres;
 						}
 						
-						if ([key isEqualToString:@"Release Date"])
+						if ([key isEqualToString:@"Release Date"]) {
 							currentMovie.releasedate = tag;
+							currentMovie.year = [currentMovie.releasedate substringWithRange: NSMakeRange (0, 4)];
+							
+						}
+						
+						if ([key isEqualToString:@"iTunes Country"])
+							currentMovie.storeID = tag;
 						
 						if ([key isEqualToString:@"Description"])
 							currentMovie.plot = tag;
@@ -637,24 +962,76 @@ int main(int argc, const char * argv[]) {
 						if ([key isEqualToString:@"contentID"])
 							currentMovie.contentID = (long)[tag integerValue];
 						
+						if ([key isEqualToString:@"Cast"]) {
+							//NSLog(@"%@",tag);
+							NSArray *tempArray = [[NSArray alloc]init];
+							NSMutableArray *actors = [[NSMutableArray alloc] init];
+							tempArray = [tag componentsSeparatedByString:@","];
+							
+							for	(NSString *curActor in tempArray) {
+								Actor *newActor = [[Actor alloc] initWithName:curActor];
+								[actors addObject:newActor];
+							}
+							currentMovie.actors = actors;
+						}
+						
+						if ([key isEqualToString:@"Director"]) {
+							//NSLog(@"%@",tag);
+							NSArray *tempArray = [[NSArray alloc]init];
+							NSMutableArray *actors = [[NSMutableArray alloc] init];
+							tempArray = [tag componentsSeparatedByString:@","];
+							
+							for	(NSString *curActor in tempArray) {
+								Actor *newActor = [[Actor alloc] initWithName:curActor];
+								[actors addObject:newActor];
+							}
+							currentMovie.directors = actors;
+						}
+						
+						if ([key isEqualToString:@"Producers"]) {
+							//NSLog(@"%@",tag);
+							NSArray *tempArray = [[NSArray alloc]init];
+							NSMutableArray *actors = [[NSMutableArray alloc] init];
+							tempArray = [tag componentsSeparatedByString:@","];
+							
+							for	(NSString *curActor in tempArray) {
+								Actor *newActor = [[Actor alloc] initWithName:curActor];
+								[actors addObject:newActor];
+							}
+							currentMovie.producers = actors;
+						}
+						
+						
 					}
+					
+					
 				}
 				
 				if ([[mp4File metadata] hdVideo]) {
-					printf("HD Video: %d\n", [[mp4File metadata] hdVideo]);
+					if ((verbose) || (listmetadata))
+						printf("HD Video: %d\n", [[mp4File metadata] hdVideo]);
+
 					currentMovie.hd = [[mp4File metadata] hdVideo];
 				}
 				if ([[mp4File metadata] gapless]) {
-					printf("Gapless: %d\n", [[mp4File metadata] gapless]);
+					if ((verbose) || (listmetadata))
+						printf("Gapless: %d\n", [[mp4File metadata] gapless]);
 				}
 				if ([[mp4File metadata] contentRating]) {
-					printf("Content Rating: %d\n", [[mp4File metadata] contentRating]);
+					if ((!ignoreTags) || (listmetadata))
+						printf("Content Rating: %d\n", [[mp4File metadata] contentRating]);
+					
+					//currentMovie.contentAdvisoryRating = [[mp4File metadata] contentRating];
 				}
+				
 				if ([[mp4File metadata] podcast]) {
-					printf("Podcast: %d\n", [[mp4File metadata] podcast]);
+					if ((verbose) || (listmetadata))
+						printf("Podcast: %d\n", [[mp4File metadata] podcast]);
 				}
 				if ([[mp4File metadata] mediaKind]) {
-					printf("Media Kind: %d\n", [[mp4File metadata] mediaKind]);
+					if ((verbose) || (listmetadata))
+						printf("Media Kind: %d\n", [[mp4File metadata] mediaKind]);
+
 					MP4MediaType kind;
 					if ([[mp4File metadata] mediaKind] == 9) {
 						kind = MP4MediaTypeMovie;
@@ -666,195 +1043,257 @@ int main(int argc, const char * argv[]) {
 					currentMovie.kind = kind;
 				}
 				
+				if ([[[mp4File metadata] artworks] count]) {
+					currentMovie.artworks = [NSArray arrayWithArray:[[mp4File metadata] artworks]];
+				}
+			}
+			
+			//////////////////////
+			// Save Artwork to File System as <pngFilename>
+			//
+			
+			if (pngFilename != nil) {
+				if (currentMovie.artwork != nil) {
+					if (!unattended) {
+						printf("Extracting artwork...");
+					}
+					//NSBitmapImageRep *imgRep = [[currentMovie.artwork representations] objectAtIndex: 0];
+					//NSData *data = [imgRep representationUsingType: NSPNGFileType properties: nil];
+					//[data writeToFile: pngFilename atomically: NO];
+					
+					for (MP42Image *curArtwork in currentMovie.artworks) {
+						[curArtwork.data writeToFile: pngFilename atomically: NO];
+					}
+					
+					
+					if (!unattended) {
+						printf(" OK\n");
+						
+					}
+				}
+			}
+			
+			
+			//////////////////////
+			// Save Artwork to File System as <movie name>-poster.png
+			//
+			if (extract) {
+				if (!unattended) {
+					printf("Extracting artwork...");
+				}
+				
+				NSString *artworkFilename = nil;
+
+				int prevType = 0;
+				int curCounter = 1;
+				
+				int artworkCounter = 0;
+				for (MP42Image *curArtwork in currentMovie.artworks) {
+					
+
+					NSArray * imageReps = [NSBitmapImageRep imageRepsWithData:curArtwork.data];
+					
+					NSInteger width = 0;
+					NSInteger height = 0;
+					
+					int curType = 0;
+					
+					NSString *artworkType = nil;
+					
+					for (NSImageRep * imageRep in imageReps) {
+						if ([imageRep pixelsWide] > width) width = [imageRep pixelsWide];
+						if ([imageRep pixelsHigh] > height) height = [imageRep pixelsHigh];
+					}
+					
+					
+					CGFloat wFloat = [[NSNumber numberWithInteger:width] floatValue];
+					CGFloat hFloat = [[NSNumber numberWithInteger: height] floatValue];
+					CGFloat aspRatio = (wFloat / hFloat);
+					
+					
+					// Poster: 800 x 1200
+					// Aspect: 0.666
+					//
+					if ((aspRatio > 0.6) && (aspRatio < 0.7)) {
+						artworkType = @"poster";
+						curType = 1;
+					}
+					
+					// Banner: 758 x 140
+					// Aspect: 5.414
+					else if ((aspRatio > 5.3) && (aspRatio < 5.5)) {
+						artworkType = @"banner";
+						curType = 2;
+					}
+					
+					// Sqaure: 758 x 140
+					// Aspect: 1.0
+					else if ((aspRatio > 0.9) && (aspRatio < 1.1)) {
+						artworkType = @"square";
+						curType = 3;
+					}
+					
+					// Fanart: 720p
+					else if ((width == 1280) && (height == 720)) {
+						artworkType = @"fanart";
+						curType = 4;
+					}
+					
+					// Fanart: 1080p
+					else if ((width == 1920) && (height == 1080)) {
+						artworkType = @"fanart";
+						curType = 4;
+					}
+					
+					
+					if (artworkCounter == 0) {
+						artworkFilename = [NSString stringWithFormat:@"%@/%@-%@.png", inputDir, fileName, artworkType];
+					} else {
+						if (prevType == curType) {
+							artworkFilename = [NSString stringWithFormat:@"%@/%@-%@-%d.png", inputDir, fileName, artworkType, curCounter];
+							curCounter++;
+						} else {
+							artworkFilename = [NSString stringWithFormat:@"%@/%@-%@.png", inputDir, fileName, artworkType];
+							curCounter=1;
+						}
+					}
+					
+					[curArtwork.data writeToFile: artworkFilename atomically: NO];
+					artworkCounter++;
+					prevType = curType;
+				}
+				if (!unattended) {
+					printf(" OK\n");
+					
+				}
+			}
+			
+			
+			//////////////////////
+			// EXIT if listmetadata !!!
+			//
+			if (listmetadata) {
+				printf("Exiting! Tags are listed above!\n");
+				return 0;
+			}
+			
+			//////////////////////
+			// Read nfo file
+			//
+			if (!ignoreNFO) {
+				
+				NSString *result = nil;
 
 				
-				
-				if (verbose) {
-					//[mp4File.metadata printCurrentTags];
+				if (!unattended) {
+					printf("Reading nfo: ");
 				}
 				
-				
-				//////////////////////
-				// Save Artwork to File System as <movie name>-poster.png
-				//
-				if (currentMovie.artwork != nil) {
-					hasArtwork = YES;
-				}
-				
-				//				// Actors
-				//				NSMutableArray *curActors = [[NSMutableArray alloc] init];
-				//				for (NSDictionary* curActor in mp4File.metadata.cast) {
-				//
-				////					NSDictionary *tmpDict = [curActor valueForKey:@"name"];
-				////					NSDictionary *tmpDict1 = [tmpDict valueForKey:@"name"];
-				////					NSDictionary *tmpDict2 = [tmpDict1 valueForKey:@"name"];
-				//
-				//					Actor *newActor = [[Actor alloc] initWithName:[curActor valueForKey:@"name"]];
-				//					[curActors addObject:newActor];
-				//				}
-				//				currentMovie.actors = curActors;
-				//
-				//				// Director
-				//				NSMutableArray *curDirectors = [[NSMutableArray alloc] init];
-				//				for (NSString* curActor in mp4File.metadata.directors) {
-				//					Actor *newActor = [[Actor alloc] initWithName:[curActor valueForKey:@"name"]];
-				//					[curDirectors addObject:newActor];
-				//				}
-				//				currentMovie.directors = curDirectors;
-				//
-				//				// Producers
-				//				NSMutableArray *curProducers = [[NSMutableArray alloc] init];
-				//				for (NSString* curActor in mp4File.metadata.producers) {
-				//					Actor *newActor = [[Actor alloc] initWithName:[curActor valueForKey:@"name"]];
-				//					[curProducers addObject:newActor];
-				//				}
-				//				currentMovie.producers = curProducers;
-				
-				if (!verbose) {
-					if (noOfFiles == 1) {
+				if ([fileManager fileExistsAtPath:nfoFilename]){
+					xmlParser = [[XMLParser alloc] init ];
+					if (verbose) {
+						printf("%s ...", [nfoFilename UTF8String]);
+						fflush(stdout);
+					}
+					currentMovie = [xmlParser loadXMLByPath:nfoFilename];
+					//					NSLog(@"currentMovie: %@",currentMovie);
+					
+					if (verbose) {
 						printf(" OK\n");
 					}
+				} else if ([fileManager fileExistsAtPath:nfoFilename2]){
+					//xmlParser = [[XMLParser alloc] loadXMLByPath:nfoFilename2];
+					//currentMovie = [[xmlParser movies] objectAtIndex:0];
+					xmlParser = [[XMLParser alloc] init ];
+					if (verbose) {
+						printf("%s ...", [nfoFilename UTF8String]);
+						fflush(stdout);
+					}
+					nfoFilename = nfoFilename2;
+					currentMovie = [xmlParser loadXMLByPath:nfoFilename];
+					//					NSLog(@"currentMovie: %@",currentMovie);
+					
+					if (verbose) {
+						printf(" OK\n");
+					}
+					
+				} else {
+					result = @"File not Found";
+				}
+				
+				if (!unattended) {
+					
+						if (result == nil) {
+							printf(" OK \n");
+						} else {
+							printf(" File not Found\n");
+						}
 				}
 			}
 			
 			
 			
 			
+			
 			//////////////////////
-			// Exit if list meta data only --> needs to be
+			// Set Title
 			//
-			if (listmetadata) {
-				NSArray * availableMetadata = [[mp4File metadata] availableMetadata];
-				NSDictionary * tagsDict = [[mp4File metadata] tagsDict];
-				
-				for (NSString* key in availableMetadata) {
-					NSString* tag = [tagsDict valueForKey:key];
-					if (tag) {
-						if ([tag isKindOfClass:[NSString class]])
-							printf("%s: %s\n", [key UTF8String], [tag UTF8String]);
-						if ([tag isKindOfClass:[NSNumber class]])
-							printf("%s: %ld\n", [key UTF8String], (long)[tag integerValue]);
-					}
-				}
-				
-				if ([[mp4File metadata] hdVideo]) {
-					printf("HD Video: %d\n", [[mp4File metadata] hdVideo]);
-				}
-				if ([[mp4File metadata] gapless]) {
-					printf("Gapless: %d\n", [[mp4File metadata] gapless]);
-				}
-				if ([[mp4File metadata] contentRating]) {
-					printf("Content Rating: %d\n", [[mp4File metadata] contentRating]);
-				}
-				if ([[mp4File metadata] podcast]) {
-					printf("Podcast: %d\n", [[mp4File metadata] podcast]);
-				}
-				if ([[mp4File metadata] mediaKind]) {
-					printf("Media Kind: %d\n", [[mp4File metadata] mediaKind]);
+			// Set Title from Folder if not specified in nfo file
+			if (inputTitle == NULL) {
+				if ([currentMovie.title isEqualToString:@""]){
+					currentMovie.title = fileName;
 				}
 			} else {
+				currentMovie.title = inputTitle;
+			}
+			// Replace "_" with " "
+			currentMovie.title = [currentMovie.title stringByReplacingOccurrencesOfString:@"_" withString:@" "];
+			// Replace " (HD)" with ""
+			currentMovie.title = [currentMovie.title stringByReplacingOccurrencesOfString:@" (HD)" withString:@""];
+			// Replace " (1080p HD)" with ""
+			currentMovie.title = [currentMovie.title stringByReplacingOccurrencesOfString:@" (1080p HD)" withString:@""];
+			currentMovie.title = [currentMovie.title stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+			
+			
+			//////////////////////
+			//  iTunes Lookup
+			//
+			if (!nolookup) {
 				
-				//////////////////////
-				// Read nfo file
-				//
-				if (!ignoreNFO) {
-					if (verbose) {
-						printf("Reading nfo: ");
-						fflush(stdout);
-					}
+				if (!unattended) {
 					
-					if (!verbose) {
-						if (noOfFiles == 1) {
-							progressBar(10, 100, PROGRESSBAR_MAX_CALLS, PROGRESSBAR_WIDTH, @"Reading nfo ", currentMovie.title);
-							sleep(1);
-						}
-					}
+						printf("Search for movie...\n");
 					
-					if ([fileManager fileExistsAtPath:nfoFilename]){
-						xmlParser = [[XMLParser alloc] init ];
-						if (verbose) {
-							printf("%s ...", [nfoFilename UTF8String]);
-							fflush(stdout);
-						}
-						currentMovie = [xmlParser loadXMLByPath:nfoFilename];
-						//					NSLog(@"currentMovie: %@",currentMovie);
-						
-						if (verbose) {
-							printf(" OK\n");
-						}
-					} else if ([fileManager fileExistsAtPath:nfoFilename2]){
-						//xmlParser = [[XMLParser alloc] loadXMLByPath:nfoFilename2];
-						//currentMovie = [[xmlParser movies] objectAtIndex:0];
-						xmlParser = [[XMLParser alloc] init ];
-						if (verbose) {
-							printf("%s ...", [nfoFilename UTF8String]);
-							fflush(stdout);
-						}
-						nfoFilename = nfoFilename2;
-						currentMovie = [xmlParser loadXMLByPath:nfoFilename];
-						//					NSLog(@"currentMovie: %@",currentMovie);
-						
-						if (verbose) {
-							printf(" OK\n");
-						}
-						
-					} else {
-						if (verbose) {
-							printf(" Not Found!\n");
-						}
-					}
 				}
 				
-				
-				
-				
+				iTunesAPI *itunesapi =  [[iTunesAPI alloc] init];
 				
 				//////////////////////
-				// Set Title
+				// Get storeID by c parameter
 				//
-				// Set Title from Folder if not specified in nfo file
-				if (inputTitle == NULL) {
-					if ([currentMovie.title isEqualToString:@""]){
-						currentMovie.title = fileName;
-					}
-				} else {
-					currentMovie.title = inputTitle;
-				}
-				// Replace "_" with " "
-				currentMovie.title = [currentMovie.title stringByReplacingOccurrencesOfString:@"_" withString:@" "];
-				// Replace " (HD)" with ""
-				currentMovie.title = [currentMovie.title stringByReplacingOccurrencesOfString:@" (HD)" withString:@""];
-				// Replace " (1080p HD)" with ""
-				currentMovie.title = [currentMovie.title stringByReplacingOccurrencesOfString:@" (1080p HD)" withString:@""];
-				currentMovie.title = [currentMovie.title stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+				currentMovie.storeID = [[itunesapi iTunesStoreCodes] valueForKey:inputCC];
 				
+				NSString* searchTitleEncodedUrl = [currentMovie.title stringByAddingPercentEscapesUsingEncoding:
+												   NSUTF8StringEncoding];
 				
-				//////////////////////
-				//  iTunes Lookup
-				//
-				if (!nolookup) {
+				NSDictionary *searchResults = [itunesapi searchForTitle:searchTitleEncodedUrl inCountry:inputCC withLimit:[inputLimit stringValue]];
+				
+				NSString *oldTitle = currentMovie.title;
+				
+				if ([[searchResults valueForKeyPath:@"results"] count] == 0) {
 					
-					if (!verbose) {
-						if (noOfFiles == 1) {
-							printf("Search for movie...\n");
-						}
+					
+					NSRange range = [currentMovie.title rangeOfString:@" - "];
+					if ( range.length > 0 ) {
+						
+						currentMovie.title = [currentMovie.title substringToIndex:range.location];
+						searchTitleEncodedUrl = [currentMovie.title stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+						
+						searchResults = [itunesapi searchForTitle:searchTitleEncodedUrl inCountry:inputCC withLimit:[inputLimit stringValue]];
 					}
-					
-					iTunesAPI *itunesapi =  [[iTunesAPI alloc] init];
-					
-					
-					
-					NSString* searchTitleEncodedUrl = [currentMovie.title stringByAddingPercentEscapesUsingEncoding:
-													   NSUTF8StringEncoding];
-					
-					NSDictionary *searchResults = [itunesapi searchForTitle:searchTitleEncodedUrl inCountry:inputCC withLimit:[inputLimit stringValue]];
-					
-					NSString *oldTitle = currentMovie.title;
 					
 					if ([[searchResults valueForKeyPath:@"results"] count] == 0) {
-						
-						
-						NSRange range = [currentMovie.title rangeOfString:@" - "];
+						range = [currentMovie.title rangeOfString:@":"];
 						if ( range.length > 0 ) {
 							
 							currentMovie.title = [currentMovie.title substringToIndex:range.location];
@@ -862,475 +1301,681 @@ int main(int argc, const char * argv[]) {
 							
 							searchResults = [itunesapi searchForTitle:searchTitleEncodedUrl inCountry:inputCC withLimit:[inputLimit stringValue]];
 						}
-						
+					}
+					
+					if ([[searchResults valueForKeyPath:@"results"] count] == 0) {
+						searchTitleEncodedUrl = [currentMovie.originaltitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+						searchResults = [itunesapi searchForTitle:searchTitleEncodedUrl inCountry:inputCC withLimit:[inputLimit stringValue]];
+					}
+					
+					if (!unattended) {
 						if ([[searchResults valueForKeyPath:@"results"] count] == 0) {
-							range = [currentMovie.title rangeOfString:@":"];
-							if ( range.length > 0 ) {
-								
-								currentMovie.title = [currentMovie.title substringToIndex:range.location];
-								searchTitleEncodedUrl = [currentMovie.title stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-								
-								searchResults = [itunesapi searchForTitle:searchTitleEncodedUrl inCountry:inputCC withLimit:[inputLimit stringValue]];
-							}
+							
+							printf("Please enter the movie title manually: ");
+							char cstring[100];
+							scanf("%s", cstring);
+							
+							NSString *manualTitle = [NSString stringWithCString:cstring encoding:1];
+							searchTitleEncodedUrl = [manualTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+							searchResults = [itunesapi searchForTitle:searchTitleEncodedUrl inCountry:inputCC withLimit:@"1"];
 						}
+					} else {
+						skip = YES;
+						currentMovie.title = oldTitle;
+						[skippedMovies addObject:currentMovie];
+					}
+				}
+				
+				
+				if (!skip) {
+					if ([[searchResults valueForKeyPath:@"results"] count] > 1) {
 						
-						if ([[searchResults valueForKeyPath:@"results"] count] == 0) {
-							searchTitleEncodedUrl = [currentMovie.originaltitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-							searchResults = [itunesapi searchForTitle:searchTitleEncodedUrl inCountry:inputCC withLimit:[inputLimit stringValue]];
+						//printf("%s (%s) - %i \n", [trackName UTF8String],[year UTF8String],[trackID intValue]);
+						printf("[0] Cancel \n");
+						
+						for (int i=0; i<[[searchResults valueForKeyPath:@"results"] count]; i++) {
+							//			NSLog(@"trackID: %@", [[searchResults valueForKeyPath:@"results.trackId"] objectAtIndex:i]);
+							//			NSLog(@"trackName: %@", [[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:i]);
+							//			NSLog(@"trackYear: %@", [[searchResults valueForKeyPath:@"results.releaseDate"] objectAtIndex:i]);
+							//			NSLog(@"trackViewUrl: %@", [[searchResults valueForKeyPath:@"results.trackViewUrl"] objectAtIndex:i]);
+							
+							
+							NSString *trackName = [[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:i];
+							NSString *releaseDate = [[searchResults valueForKeyPath:@"results.releaseDate"] objectAtIndex:i];
+							//NSNumber *trackID = [[searchResults valueForKeyPath:@"results.trackId"] objectAtIndex:i];
+							
+							
+							NSRange needleRange = NSMakeRange(0,4);
+							NSString *year = [releaseDate substringWithRange:needleRange];
+							
+							printf("[%i] ", i+1);
+							//printf("%s (%s) - %i \n", [trackName UTF8String],[year UTF8String],[trackID intValue]);
+							printf("%s (%s) \n", [trackName UTF8String],[year UTF8String]);
+							
+							
+						}
+					}
+					int n;
+					if ([[searchResults valueForKeyPath:@"results"] count] > 1) {
+						
+						printf("Please enter the number: ");
+						scanf("%i", &n);
+						
+						printf("Selected Option: %i \n", n);
+						if (n == 0) {
+							skip = YES;
+							[skippedMovies addObject:currentMovie];
+						}
+					} else {
+						n=1;
+					}
+					
+					if (!skip) {
+						if (verbose) {
+							printf("Looking up for %s...",[[[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:n-1] UTF8String]);
 						}
 						
 						if (!unattended) {
-							if ([[searchResults valueForKeyPath:@"results"] count] == 0) {
-								
-								printf("Please enter the movie title manually: ");
-								char cstring[100];
-								scanf("%s", cstring);
-								
-								NSString *manualTitle = [NSString stringWithCString:cstring encoding:1];
-								searchTitleEncodedUrl = [manualTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-								searchResults = [itunesapi searchForTitle:searchTitleEncodedUrl inCountry:inputCC withLimit:@"1"];
-							}
-						} else {
-							skip = YES;
-							currentMovie.title = oldTitle;
-							[skippedMovies addObject:currentMovie];
-						}
-					}
-					
-					
-					if (!skip) {
-						if ([[searchResults valueForKeyPath:@"results"] count] > 1) {
-							
-							//printf("%s (%s) - %i \n", [trackName UTF8String],[year UTF8String],[trackID intValue]);
-							printf("[0] Cancel \n");
-							
-							for (int i=0; i<[[searchResults valueForKeyPath:@"results"] count]; i++) {
-								//			NSLog(@"trackID: %@", [[searchResults valueForKeyPath:@"results.trackId"] objectAtIndex:i]);
-								//			NSLog(@"trackName: %@", [[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:i]);
-								//			NSLog(@"trackYear: %@", [[searchResults valueForKeyPath:@"results.releaseDate"] objectAtIndex:i]);
-								//			NSLog(@"trackViewUrl: %@", [[searchResults valueForKeyPath:@"results.trackViewUrl"] objectAtIndex:i]);
-								
-								
-								NSString *trackName = [[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:i];
-								NSString *releaseDate = [[searchResults valueForKeyPath:@"results.releaseDate"] objectAtIndex:i];
-								//NSNumber *trackID = [[searchResults valueForKeyPath:@"results.trackId"] objectAtIndex:i];
-								
-								
-								NSRange needleRange = NSMakeRange(0,4);
-								NSString *year = [releaseDate substringWithRange:needleRange];
-								
-								printf("[%i] ", i+1);
-								//printf("%s (%s) - %i \n", [trackName UTF8String],[year UTF8String],[trackID intValue]);
-								printf("%s (%s) \n", [trackName UTF8String],[year UTF8String]);
-								
-								
-							}
-						}
-						int n;
-						if ([[searchResults valueForKeyPath:@"results"] count] > 1) {
-							
-							printf("Please enter the number: ");
-							scanf("%i", &n);
-							
-							printf("Selected Option: %i \n", n);
-							if (n == 0) {
-								skip = YES;
-								[skippedMovies addObject:currentMovie];
-							}
-						} else {
-							n=1;
-						}
-						
-						if (!skip) {
-							if (verbose) {
 								printf("Looking up for %s...",[[[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:n-1] UTF8String]);
-							}
-							
-							if (!verbose) {
-								if (noOfFiles == 1) {
-									printf("Looking up for %s...",[[[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:n-1] UTF8String]);
-								}
-							}
-							
-							NSString *tempString;
-							
-							tempString = [[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:n-1];
-							if (tempString != NULL) {
-								currentMovie.title = tempString;
-							}
-							
-							tempString = [[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:n-1];
-							if (tempString != NULL) {
-								currentMovie.originaltitle = tempString;
-							}
-							
-							tempString = [[[searchResults valueForKeyPath:@"results.trackId"] objectAtIndex:n-1] stringValue];
-							if (tempString != NULL) {
-								currentMovie.itunesid = tempString;
-							}
-							
-							tempString = [[searchResults valueForKeyPath:@"results.releaseDate"] objectAtIndex:n-1];
-							if (tempString != NULL) {
-								
-								
-								NSRange needleRange = NSMakeRange(0,4);
-								NSString *year = [tempString substringWithRange:needleRange];
-								currentMovie.year = year;
-								
-								needleRange = NSMakeRange(0,10);
-								NSString *rd = [tempString substringWithRange:needleRange];
-								currentMovie.releasedate = rd;
-							}
-							
-							tempString = [[searchResults valueForKeyPath:@"results.artistName"] objectAtIndex:n-1];
-							if (tempString != NULL) {
-								currentMovie.artistname = tempString;
-							}
-							
-							tempString = [[searchResults valueForKeyPath:@"results.kind"] objectAtIndex:n-1];
-							if ([tempString isEqualToString:@"feature-movie"]) {
-								currentMovie.kind = MP4MediaTypeMovie;
-							}
-							
-							tempString = [[searchResults valueForKeyPath:@"results.longDescription"] objectAtIndex:n-1];
-							if (tempString != NULL) {
-								currentMovie.plot = tempString;
-							}
-							
-							tempString = [[searchResults valueForKeyPath:@"results.contentAdvisoryRating"] objectAtIndex:n-1];
-							if (tempString != NULL) {
-								currentMovie.mpaa = [itunesapi getMPAARatingString:tempString];
-								currentMovie.mpaaiTunes = tempString;
-								currentMovie.contentAdvisoryRating = [itunesapi getiTunesRatingString:tempString];
-							}
-							
-							tempString = [[searchResults valueForKeyPath:@"results.primaryGenreName"] objectAtIndex:n-1];
-							if (tempString != NULL) {
-								[currentMovie.genres arrayByAddingObject:tempString];
-							}
-							
-							NSString *artworkUrl = [itunesapi getHighResArtworkUrl:[[searchResults valueForKeyPath:@"results.artworkUrl100"] objectAtIndex:n-1]];
-							
-							
-							//////////////////////
-							// Thumbs
-							//
-							NSMutableArray* curThumbs = [[NSMutableArray alloc] init];
-							if ([currentMovie.thumbs count] > 0) {
-								
-								
-								for (Thumb *thumb in currentMovie.thumbs) {
-									[curThumbs addObject:thumb];
-								}
-							}
-							Thumb *curThumb = [[Thumb alloc] init];
-							curThumb.aspect = @"poster";
-							curThumb.preview = @"";
-							curThumb.value = artworkUrl;
-							
-							[curThumbs addObject:curThumb];
-							currentMovie.thumbs = curThumbs;
-							
-							//////////////////////
-							// Cast & Crew
-							//
-							
-							NSMutableDictionary *castResult = [[NSMutableDictionary alloc] init];
-							castResult = [NSMutableDictionary dictionaryWithDictionary:[itunesapi lookupCast:[[searchResults valueForKeyPath:@"results.trackViewUrl"] objectAtIndex:n-1]]];
-							
-							// Actors
-							if ([currentMovie.actors count] == 0) {
-								
-								NSArray *curActors = [NSArray arrayWithArray:[castResult objectForKey:@"actors"]];
-								NSMutableArray *actors = [[NSMutableArray alloc] init];
-								
-								for (NSString *curActor in curActors) {
-									Actor *newActor = [[Actor alloc] initWithName:curActor];
-									
-									[actors addObject:newActor];
-								}
-								currentMovie.actors = actors;
-							}
-							
-							// directors
-							if ([currentMovie.directors count] == 0) {
-								
-								NSArray *curDirectors = [NSArray arrayWithArray:[castResult objectForKey:@"directors"]];
-								NSMutableArray *directors = [[NSMutableArray alloc] init];
-								
-								for (NSString *curActor in curDirectors) {
-									Actor *newActor = [[Actor alloc] initWithName:curActor];
-									
-									[directors addObject:newActor];
-								}
-								currentMovie.directors = directors;
-							}
-							
-							// producers
-							if ([currentMovie.producers count] == 0) {
-								
-								NSArray *curProducers = [NSArray arrayWithArray:[castResult objectForKey:@"producers"]];
-								NSMutableArray *producers = [[NSMutableArray alloc] init];
-								
-								for (NSString *curActor in curProducers) {
-									Actor *newActor = [[Actor alloc] initWithName:curActor];
-									
-									[producers addObject:newActor];
-								}
-								currentMovie.producers = producers;
-							}
-							
-							// copyright
-							if ([[castResult objectForKey:@"copyrights"] count] > 0) {
-								
-								NSString *tempString = [[NSArray arrayWithArray:[castResult objectForKey:@"copyrights"]] objectAtIndex:0];
-								[tempString stringByReplacingOccurrencesOfString:@" All Rights Reserved." withString:@""];
-								[tempString stringByReplacingOccurrencesOfString:@" All Rights Reserved" withString:@""];
-								[tempString stringByReplacingOccurrencesOfString:@"All Rights Reserved" withString:@""];
-								
-								currentMovie.copyright = tempString;
-							}
-							if (verbose) {
-								printf(" OK\n");
-							}
-							if (!verbose) {
-								if (noOfFiles == 1) {
-									printf(" OK\n");
-								}
-							}
+						
 						}
 						
+						NSString *tempString;
+						
+						tempString = [[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:n-1];
+						if (tempString != NULL) {
+							currentMovie.title = tempString;
+						}
+						
+						tempString = [[searchResults valueForKeyPath:@"results.trackName"] objectAtIndex:n-1];
+						if (tempString != NULL) {
+							currentMovie.originaltitle = tempString;
+						}
+						
+						tempString = [[[searchResults valueForKeyPath:@"results.trackId"] objectAtIndex:n-1] stringValue];
+						if (tempString != NULL) {
+							currentMovie.itunesid = tempString;
+							currentMovie.contentID = [tempString integerValue];
+						}
+						
+						tempString = [[searchResults valueForKeyPath:@"results.releaseDate"] objectAtIndex:n-1];
+						if (tempString != NULL) {
+							
+							
+							NSRange needleRange = NSMakeRange(0,4);
+							NSString *year = [tempString substringWithRange:needleRange];
+							currentMovie.year = year;
+							
+							needleRange = NSMakeRange(0,10);
+							NSString *rd = [tempString substringWithRange:needleRange];
+							currentMovie.releasedate = rd;
+						}
+						
+						tempString = [[searchResults valueForKeyPath:@"results.artistName"] objectAtIndex:n-1];
+						if (tempString != NULL) {
+							currentMovie.artistname = tempString;
+						}
+						
+						tempString = [[searchResults valueForKeyPath:@"results.kind"] objectAtIndex:n-1];
+						if ([tempString isEqualToString:@"feature-movie"]) {
+							currentMovie.kind = MP4MediaTypeMovie;
+						}
+						
+						tempString = [[searchResults valueForKeyPath:@"results.longDescription"] objectAtIndex:n-1];
+						if (tempString != NULL) {
+							currentMovie.plot = tempString;
+						}
+						
+						tempString = [[searchResults valueForKeyPath:@"results.contentAdvisoryRating"] objectAtIndex:n-1];
+						if (tempString != NULL) {
+							currentMovie.mpaa = [itunesapi getMPAARatingString:tempString];
+							currentMovie.mpaaiTunes = tempString;
+							currentMovie.contentAdvisoryRating = [itunesapi getiTunesRatingString:tempString];
+						}
+						
+						tempString = [[searchResults valueForKeyPath:@"results.primaryGenreName"] objectAtIndex:n-1];
+						if (tempString != NULL) {
+							[currentMovie.genres arrayByAddingObject:tempString];
+						}
+						
+						NSString *artworkUrl = [itunesapi getHighResArtworkUrl:[[searchResults valueForKeyPath:@"results.artworkUrl100"] objectAtIndex:n-1]];
 						
 						
 						//////////////////////
-						// Write nfo
+						// Thumbs
 						//
-						if (writenfo) {
-							if ([fileManager fileExistsAtPath:nfoTarget]) {
-								if (overwritenfo) {
-									if (verbose) {
-										printf("Writing nfo file... ");
-										fflush(stdout);
-									}
-									
-									if (!verbose) {
-										if (noOfFiles == 1) {
-											printf("Writing nfo file...");
-										}
-									}
-									
-									//writeXML(currentMovie, nfoTarget);
-									if (verbose) {
-										printf(" OK\n");
-									}
-									if (!verbose) {
-										if (noOfFiles == 1) {
-											printf(" OK\n");
-										}
-									}
-								}
-							} else {
-								if (verbose) {
-									printf("Writing nfo file... ");
-									fflush(stdout);
-								}
-								
-								if (!verbose) {
-									if (noOfFiles == 1) {
-										printf("Writing nfo file...");
-									}
-								}
-								
-								//writeXML(currentMovie, nfoTarget);
-								if (verbose) {
-									printf(" OK\n");
-								}
-								if (!verbose) {
-									if (noOfFiles == 1) {
-										printf(" OK\n");
-									}
-								}
-							}
-						}
-					}
-					
-					
-					//////////////////////
-					// Download Artwork to NSImage
-					//
-					
-					if ((!hasArtwork) || (ignoreTags)) {
+						NSMutableArray* curThumbs = [[NSMutableArray alloc] init];
 						if ([currentMovie.thumbs count] > 0) {
-							if (!verbose) {
-								if (noOfFiles == 1) {
-									printf("Downloading artwork...");
-								}
-							}
 							
-							Thumb *curThumb = [currentMovie.thumbs objectAtIndex:0];
-							NSURL *artworkUrl = [NSURL URLWithString:curThumb.value];
-							currentMovie.artwork = [[NSImage alloc] initWithContentsOfURL: artworkUrl];
 							
-							if (!verbose) {
-								if (noOfFiles == 1) {
-									printf(" OK\n");
-								}
+							for (Thumb *thumb in currentMovie.thumbs) {
+								[curThumbs addObject:thumb];
 							}
 						}
-					}
-					
-					
-					//////////////////////
-					// Save Artwork to File System as <pngFilename>
-					//
-					
-					if (pngFilename != nil) {
-						if (currentMovie.artwork != nil) {
-							if (!verbose) {
-								if (noOfFiles == 1) {
-									printf("Extracting artwork...");
-								}
+						Thumb *curThumb = [[Thumb alloc] init];
+						curThumb.aspect = @"poster";
+						curThumb.preview = @"";
+						curThumb.value = artworkUrl;
+						
+						[curThumbs addObject:curThumb];
+						currentMovie.thumbs = curThumbs;
+						
+						//////////////////////
+						// Cast & Crew
+						//
+						
+						NSMutableDictionary *castResult = [[NSMutableDictionary alloc] init];
+						castResult = [NSMutableDictionary dictionaryWithDictionary:[itunesapi lookupCast:[[searchResults valueForKeyPath:@"results.trackViewUrl"] objectAtIndex:n-1]]];
+						
+						// Actors
+						if ([currentMovie.actors count] == 0) {
+							
+							NSArray *curActors = [NSArray arrayWithArray:[castResult objectForKey:@"actors"]];
+							NSMutableArray *actors = [[NSMutableArray alloc] init];
+							
+							for (NSString *curActor in curActors) {
+								Actor *newActor = [[Actor alloc] initWithName:curActor];
+								
+								[actors addObject:newActor];
 							}
-							NSBitmapImageRep *imgRep = [[currentMovie.artwork representations] objectAtIndex: 0];
-							NSData *data = [imgRep representationUsingType: NSPNGFileType properties: nil];
-							[data writeToFile: pngFilename atomically: NO];
-							if (!verbose) {
-								if (noOfFiles == 1) {
-									printf(" OK\n");
-								}
-							}
-						}
-					}
-					
-					//////////////////////
-					// Save Artwork to File System as <movie name>-poster.png
-					//
-					if (extract) {
-						if (currentMovie.artwork != nil) {
-							if (!verbose) {
-								if (noOfFiles == 1) {
-									printf("Extracting artwork...");
-								}
-							}
-							NSBitmapImageRep *imgRep = [[currentMovie.artwork representations] objectAtIndex: 0];
-							NSData *data = [imgRep representationUsingType: NSPNGFileType properties: nil];
-							[data writeToFile: artworkFilename atomically: NO];
-							if (!verbose) {
-								if (noOfFiles == 1) {
-									printf(" OK\n");
-								}
-							}
-						}
-					}
-					
-					
-					
-					//////////////////////
-					// Write Tags
-					//
-					if (tag) {
-						if (!verbose) {
-							if (noOfFiles == 1) {
-								printf("Tagging movie...");
-							}
+							currentMovie.actors = actors;
 						}
 						
-						//						mp4File.metadata.name = currentMovie.title;
-						//						if ([currentMovie.genres count] > 0) {
-						//							mp4File.metadata.genre = [currentMovie.genres objectAtIndex:0];
-						//						}
-						//						mp4File.metadata.comments = currentMovie.comments;
-						//						mp4File.metadata.contentId = currentMovie.contentID;
-						//						mp4File.metadata.contentRating = currentMovie.contentAdvisoryRating;
-						//						mp4File.metadata.longDescription = currentMovie.plot;
-						//						mp4File.metadata.shortDescription = currentMovie.outline;
-						//						mp4File.metadata.type = currentMovie.type;
-						//						mp4File.metadata.hd = currentMovie.hd;
-						//						mp4File.metadata.screenFormat = currentMovie.screenformat;
-						//						mp4File.metadata.releaseDate = currentMovie.releasedate;
-						//
-						//						if (currentMovie.artwork != nil) {
-						//							mp4File.metadata.artwork = currentMovie.artwork;
-						//						}
-						//
-						//
-						//						// Actors
-						//						if ([currentMovie.actors count] > 0) {
-						//							NSMutableArray *cast = [[NSMutableArray alloc] init];
-						//							for (Actor *curActor in currentMovie.actors) {
-						//								[cast addObject:curActor.name];
-						//							}
-						//							mp4File.metadata.cast = cast;
-						//						}
-						//
-						//						// Directors
-						//						if ([currentMovie.directors count] > 0) {
-						//							NSMutableArray *directors = [[NSMutableArray alloc] init];
-						//							for (Actor *curActor in currentMovie.directors) {
-						//								[directors addObject:curActor.name];
-						//							}
-						//							mp4File.metadata.directors = directors;
-						//						}
-						//
-						//						// Producers
-						//						if ([currentMovie.producers count] > 0) {
-						//							NSMutableArray *producers = [[NSMutableArray alloc] init];
-						//							for (Actor *curActor in currentMovie.producers) {
-						//								[producers addObject:curActor.name];
-						//							}
-						//							mp4File.metadata.producers = producers;
-						//						}
-						//
-						//						NSError *error;
-						//						[mp4File save:&error];
-						//
-						//						if (error) {
-						//							NSLog(@"Error occured while tagging: %@",error);
-						//							[skippedMovies addObject:currentMovie];
-						//							skip = YES;
-						//							//return 1;
-						//
-						//						}
+						// directors
+						if ([currentMovie.directors count] == 0) {
+							
+							NSArray *curDirectors = [NSArray arrayWithArray:[castResult objectForKey:@"directors"]];
+							NSMutableArray *directors = [[NSMutableArray alloc] init];
+							
+							for (NSString *curActor in curDirectors) {
+								Actor *newActor = [[Actor alloc] initWithName:curActor];
+								
+								[directors addObject:newActor];
+							}
+							currentMovie.directors = directors;
+						}
 						
-						if (!verbose) {
-							if (noOfFiles == 1) {
+						// producers
+						if ([currentMovie.producers count] == 0) {
+							
+							NSArray *curProducers = [NSArray arrayWithArray:[castResult objectForKey:@"producers"]];
+							NSMutableArray *producers = [[NSMutableArray alloc] init];
+							
+							for (NSString *curActor in curProducers) {
+								Actor *newActor = [[Actor alloc] initWithName:curActor];
+								
+								[producers addObject:newActor];
+							}
+							currentMovie.producers = producers;
+						}
+						
+						// copyright
+						if ([[castResult objectForKey:@"copyrights"] count] > 0) {
+							
+							NSString *tempString = [[NSArray arrayWithArray:[castResult objectForKey:@"copyrights"]] objectAtIndex:0];
+							[tempString stringByReplacingOccurrencesOfString:@" All Rights Reserved." withString:@""];
+							[tempString stringByReplacingOccurrencesOfString:@" All Rights Reserved" withString:@""];
+							[tempString stringByReplacingOccurrencesOfString:@"All rights reserved" withString:@""];
+							[tempString stringByReplacingOccurrencesOfString:@"All Rights Reserved" withString:@""];
+							
+							currentMovie.copyright = tempString;
+						}
+
+
+						if (!unattended) {
 								printf(" OK\n");
-							}
 						}
 					}
 					
-					//////////////////////
-					// Add Movie to processedMovies
-					//
-					if (verbose) {
-						if (!skip) {
-							[processedMovies addObject:currentMovie];
-						}
-					}
-					skip = NO;
+					
 				}
 				
+			}
+			
+			
+			//////////////////////
+			// Content Rating
+			//
+			if (!currentMovie.contentAdvisoryRating) {
+				NSInteger index = indexOfITunesCodes(currentMovie.mpaaiTunes, [mp4File.metadata allITunesCodes]);
+				currentMovie.contentAdvisoryRating = [[mp4File.metadata allITunesCodes] objectAtIndex:index];
+			}
+			
+			
+			
+			//////////////////////
+			// Short Description
+			//
+			
+			if ( ([currentMovie.shortdescription isEqualToString:@""]) && (![currentMovie.plot isEqualToString:@""]) ) {
+				
+				NSRange stringRange = {0, MIN([currentMovie.plot length], 225)};
+				stringRange = [currentMovie.plot rangeOfComposedCharacterSequencesForRange:stringRange];
+				
+				// Now you can create the short string
+				currentMovie.shortdescription = [[currentMovie.plot substringWithRange:stringRange] stringByAppendingString:@"..."];
+			}
+		
+			//////////////////////
+			// Download Artwork to NSImage
+			//
+			
+			if ((!hasArtwork) || (ignoreTags)) {
+				
+				if ([currentMovie.thumbs count] > 0) {
+					if (!unattended) {
+						printf("Downloading artwork...");
+					}
+					
+//					Thumb *curThumb = [currentMovie.thumbs objectAtIndex:[currentMovie.thumbs count] -1 ];
+					Thumb *curThumb = [currentMovie.thumbs objectAtIndex:0];
+					NSURL *artworkUrl = [NSURL URLWithString:curThumb.value];
+					NSImage *artwork = [[NSImage alloc] initWithContentsOfURL:artworkUrl];
+					NSData *data = [[NSData alloc] init];
+					NSString *artworkExt = nil;
+					
+					NSBitmapImageRep *imgRep = [[artwork representations] objectAtIndex: 0];
+					
+					if ([curThumb.value hasSuffix:@".jpg"]) {
+						data = [imgRep representationUsingType: NSJPEGFileType properties: nil];
+						artworkExt = @"jpg";
+					} else if ([curThumb.value hasSuffix:@".png"]) {
+						data = [imgRep representationUsingType: NSPNGFileType properties: nil];
+						artworkExt = @"png";
+					}
+					
+					NSArray * imageReps = [NSBitmapImageRep imageRepsWithData:data];
+					
+					NSInteger width = 0;
+					NSInteger height = 0;
+					
+					int curType = 0;
+					
+					NSString *artworkType = nil;
+					
+					for (NSImageRep * imageRep in imageReps) {
+						if ([imageRep pixelsWide] > width) width = [imageRep pixelsWide];
+						if ([imageRep pixelsHigh] > height) height = [imageRep pixelsHigh];
+					}
+					
+					
+					CGFloat wFloat = [[NSNumber numberWithInteger:width] floatValue];
+					CGFloat hFloat = [[NSNumber numberWithInteger: height] floatValue];
+					CGFloat aspRatio = (wFloat / hFloat);
+					
+					
+					// Poster: 800 x 1200
+					// Aspect: 0.666
+					//
+					if ((aspRatio > 0.6) && (aspRatio < 0.72)) {
+						artworkType = @"poster";
+						curType = 1;
+					}
+					
+					// Banner: 758 x 140
+					// Aspect: 5.414
+					else if ((aspRatio > 5.3) && (aspRatio < 5.5)) {
+						artworkType = @"banner";
+						curType = 2;
+					}
+					
+					// Sqaure: 758 x 140
+					// Aspect: 1.0
+					else if ((aspRatio > 0.9) && (aspRatio < 1.1)) {
+						artworkType = @"square";
+						curType = 3;
+					}
+					
+					// Fanart: 720p
+					else if ((width == 1280) && (height == 720)) {
+						artworkType = @"fanart";
+						curType = 4;
+					}
+					
+					// Fanart: 1080p
+					else if ((width == 1920) && (height == 1080)) {
+						artworkType = @"fanart";
+						curType = 4;
+					}
+					
+					artworkFilename = [NSString stringWithFormat:@"%@/%@-%@.%@", inputDir, fileName, artworkType, artworkExt];
+					
+					
+					[data writeToFile:artworkFilename atomically: NO];
+					
+					if (!unattended) {
+						printf(" OK\n");
+					}
+				}
+				
+				
+				// Fanart
+				if ([currentMovie.fanarts count] > 0) {
+					if (!unattended) {
+						printf("Downloading fanart...");
+					}
+					
+					//					Thumb *curThumb = [currentMovie.thumbs objectAtIndex:[currentMovie.thumbs count] -1 ];
+					Thumb *curThumb = [currentMovie.fanarts objectAtIndex:0];
+					NSURL *artworkUrl = [NSURL URLWithString:curThumb.value];
+					NSImage *artwork = [[NSImage alloc] initWithContentsOfURL:artworkUrl];
+					NSData *data = [[NSData alloc] init];
+					NSString *artworkExt = nil;
+					
+					NSBitmapImageRep *imgRep = [[artwork representations] objectAtIndex: 0];
+					
+					if ([curThumb.value hasSuffix:@".jpg"]) {
+						data = [imgRep representationUsingType: NSJPEGFileType properties: nil];
+						artworkExt = @"jpg";
+					} else if ([curThumb.value hasSuffix:@".png"]) {
+						data = [imgRep representationUsingType: NSPNGFileType properties: nil];
+						artworkExt = @"png";
+					}
+					
+					NSArray * imageReps = [NSBitmapImageRep imageRepsWithData:data];
+					
+					NSInteger width = 0;
+					NSInteger height = 0;
+					
+					int curType = 0;
+					
+					NSString *artworkType = nil;
+					
+					for (NSImageRep * imageRep in imageReps) {
+						if ([imageRep pixelsWide] > width) width = [imageRep pixelsWide];
+						if ([imageRep pixelsHigh] > height) height = [imageRep pixelsHigh];
+					}
+					
+					
+					CGFloat wFloat = [[NSNumber numberWithInteger:width] floatValue];
+					CGFloat hFloat = [[NSNumber numberWithInteger: height] floatValue];
+					CGFloat aspRatio = (wFloat / hFloat);
+					
+					
+					// Poster: 800 x 1200
+					// Aspect: 0.666
+					//
+					if ((aspRatio > 0.6) && (aspRatio < 0.72)) {
+						artworkType = @"poster";
+						curType = 1;
+					}
+					
+					// Banner: 758 x 140
+					// Aspect: 5.414
+					else if ((aspRatio > 5.3) && (aspRatio < 5.5)) {
+						artworkType = @"banner";
+						curType = 2;
+					}
+					
+					// Sqaure: 758 x 140
+					// Aspect: 1.0
+					else if ((aspRatio > 0.9) && (aspRatio < 1.1)) {
+						artworkType = @"square";
+						curType = 3;
+					}
+					
+					// Fanart: 720p
+					else if ((width == 1280) && (height == 720)) {
+						artworkType = @"fanart";
+						curType = 4;
+					}
+					
+					// Fanart: 1080p
+					else if ((width == 1920) && (height == 1080)) {
+						artworkType = @"fanart";
+						curType = 4;
+					}
+					
+					fanartFilename = [NSString stringWithFormat:@"%@/%@-%@.%@", inputDir, fileName, artworkType, artworkExt];
+					
+					
+					[data writeToFile:fanartFilename atomically: NO];
+					
+					if (!unattended) {
+						printf(" OK\n");
+					}
+				}
+			}
+			
+
+			//////////////////////
+			// Write Tags
+			//
+			if (tag) {
+				
+				NSMutableDictionary *attributes = [[[NSMutableDictionary alloc] init] autorelease];
+				
+				if (!unattended) {
+						printf("Tagging movie...");
+				}
+				
+				
+				NSError *outError = nil;
+				BOOL success = NO;
+				
+				[mp4File.metadata removeAllArtworks];
+				
+				if ([mp4File hasFileRepresentation]) {
+					success = [mp4File updateMP4FileWithAttributes:attributes error:&outError];
+				}
+
+				
+				if (!success) {
+					printf("\nError: %s\n", [[outError localizedDescription] UTF8String]);
+					return -1;
+				} else {
+					if (!unattended) {
+						printf(" OK\n");
+					}
+				}
+				
+
+				
+				
+				// First: Poster
+				if (artworkFilename != nil) {
+					[mp4File.metadata setTag:artworkFilename forKey:@"Artwork"];
+				}
+
+				// Second: Fanart
+				if (fanartFilename != nil) {
+					[mp4File.metadata setTag:fanartFilename forKey:@"Artwork"];
+				}
+				// Third: ???
+				
+				
+				if (![currentMovie.title isEqualToString:@""]) {
+					[mp4File.metadata setTag:currentMovie.title forKey:@"Name"];
+				}
+				
+				if ([currentMovie.genres  count] > 0) {
+					[mp4File.metadata setTag:[currentMovie.genres objectAtIndex:0] forKey:@"Genre"];
+				}
+				
+				if (![currentMovie.releasedate isEqualToString:@""]) {
+					[mp4File.metadata setTag:currentMovie.releasedate forKey:@"Release Date"];
+				}
+				
+				if (![currentMovie.plot isEqualToString:@""]) {
+					[mp4File.metadata setTag:currentMovie.plot forKey:@"Long Description"];
+					
+					[mp4File.metadata setTag:currentMovie.shortdescription forKey:@"Description"];
+				}
+				
+				if (currentMovie.contentID != 0) {
+					[mp4File.metadata setTag:[NSNumber numberWithInteger:currentMovie.contentID] forKey:@"contentID"];
+				}
+				
+				if (currentMovie.storeID != nil) {
+					[mp4File.metadata setTag:currentMovie.storeID forKey:@"iTunes Country"];
+				}
+				
+				if (currentMovie.kind != 0) {
+					[mp4File.metadata setTag:[NSNumber numberWithInteger:currentMovie.kind] forKey:@"Media Kind"];
+				}
+				
+				[mp4File.metadata setTag:currentMovie.copyright forKey:@"Copyright"];
 				
 				
 				//////////////////////
-				// Display non verbose
+				// Content Rating
 				//
-				if (!verbose) {
-					if (noOfFiles > 1) {
-						NSString *displayString = [NSString stringWithFormat:@" %3i / %3lu", fileCounter, (unsigned long)noOfFiles];
-						progressBar(fileCounter, (int)noOfFiles, PROGRESSBAR_MAX_CALLS, PROGRESSBAR_WIDTH, displayString, currentMovie.title);
+				if (![currentMovie.contentAdvisoryRating isEqualToString:@""]) {
+					NSInteger index = indexOfITunesCodes(currentMovie.mpaaiTunes, [mp4File.metadata allITunesCodes]);
+					[mp4File.metadata setTag:[NSNumber numberWithInteger:index] forKey:@"Rating"];
+				}
+				
+				//////////////////////
+				// Cast
+				//
+				NSMutableArray *actorNames = [[NSMutableArray alloc] init];
+				for (int i=0; i < [currentMovie.actors count]; i++) {
+					Actor *curActor = [[currentMovie actors] objectAtIndex:i];
+					[actorNames addObject:curActor.name];
+					if (i == 9) {
+						break;
 					}
 				}
-				fileCounter++;
-				currentMovie = nil;
+				NSMutableArray *filteredCast = [[[[NSOrderedSet alloc] initWithArray:actorNames] array] mutableCopy];
+				
+				NSString *castString = [filteredCast componentsJoinedByString:@", "];
+				[mp4File.metadata setTag:castString forKey:@"Cast"];
+				
+				//////////////////////
+				// directors
+				//
+				actorNames = [[NSMutableArray alloc] init];
+				for (int i=0; i < [currentMovie.directors count]; i++) {
+					Actor *curActor = [[currentMovie directors] objectAtIndex:i];
+					[actorNames addObject:curActor.name];
+					if (i == 9) {
+						break;
+					}
+				}
+				filteredCast = [[[[NSOrderedSet alloc] initWithArray:actorNames] array] mutableCopy];
+
+				castString = [filteredCast componentsJoinedByString:@", "];
+				currentMovie.artistname = castString;
+				
+				[mp4File.metadata setTag:castString forKey:@"Director"];
+				[mp4File.metadata setTag:castString forKey:@"Artist"];
+
+				
+
+				
+				
+				//////////////////////
+				// producers
+				//
+				actorNames = [[NSMutableArray alloc] init];
+				for (int i=0; i < [currentMovie.producers count]; i++) {
+					Actor *curActor = [[currentMovie producers] objectAtIndex:i];
+					[actorNames addObject:curActor.name];
+					if (i == 9) {
+						break;
+					}
+				}
+				filteredCast = [[[[NSOrderedSet alloc] initWithArray:actorNames] array] mutableCopy];
+				
+				castString = [filteredCast componentsJoinedByString:@", "];
+				[mp4File.metadata setTag:castString forKey:@"Producer"];
+				
+				
+				outError = nil;
+				success = NO;
+				if ([mp4File hasFileRepresentation]) {
+					//success = [mp4File updateMP4FileWithAttributes:attributes error:&outError];
+					success = [mp4File updateMP4FileWithAttributes:attributes error:&outError];
+
+				}
+//				else if (destinationPath) {
+//					if ([mp4File dataSize] > 4100000000 || _64bitchunk) {
+//						[attributes setObject:@YES forKey:MP4264BitData];
+//					}
+//					
+//					success = [mp4File writeToUrl:[NSURL fileURLWithPath:destinationPath]
+//								   withAttributes:attributes
+//											error:&outError];
+//				}
+				
+				if (!success) {
+					printf("\nError: %s\n", [[outError localizedDescription] UTF8String]);
+					return -1;
+				} else {
+					if (!unattended) {
+						printf(" OK\n");
+					}
+				}
+			
+
 			}
-		}
+		
+		
+			
+			//////////////////////
+			// Write nfo
+			//
+			if (writenfo) {
+				if ([fileManager fileExistsAtPath:nfoTarget]) {
+					if (overwritenfo) {
+						
+						if (!unattended) {
+							printf("Writing nfo file...");
+							fflush(stdout);
+						}
+						
+						writeXML(currentMovie, nfoTarget);
+						
+						if (!unattended) {
+							printf(" OK\n");
+						}
+					}
+				} else {
+					if (!unattended) {
+						printf("Writing nfo file...");
+						fflush(stdout);
+					}
+					
+					writeXML(currentMovie, nfoTarget);
+					if (!unattended) {
+						printf(" OK\n");
+					}
+				}
+			}
+			
+			
+			
+			//////////////////////
+			// Add Movie to processedMovies
+			//
+			if (verbose) {
+				if (!skip) {
+					[processedMovies addObject:currentMovie];
+				}
+			}
+			
+			
+			//////////////////////
+			// Display non verbose
+			//
+			if ((!verbose) && (unattended)) {
+				if (noOfFiles > 1) {
+					NSString *displayString = [NSString stringWithFormat:@" %3i / %3lu", fileCounter, (unsigned long)noOfFiles];
+					progressBar(fileCounter, (int)noOfFiles, PROGRESSBAR_MAX_CALLS, PROGRESSBAR_WIDTH, displayString, currentMovie.title);
+				}
+			}
+			fileCounter++;
+			currentMovie = nil;
+			skip = NO;
+			
+		}	// end for loop
+		
 		//////////////////////
 		// Display result
 		//
 		printf("================================================================\n");
-		printf("Number of movies:			%lu	\n", (unsigned long)noOfFiles);
-		printf("Number of skipped movies:	%lu	\n", [skippedMovies count]);
+		printf("Number of movies:           %lu	\n", (unsigned long)noOfFiles);
+		printf("Number of skipped movies:   %lu	\n", [skippedMovies count]);
 		if ([skippedMovies count] > 0) {
 			printf("List of skipped movies:			\n");
 			for (Movie *curMovie in skippedMovies) {
