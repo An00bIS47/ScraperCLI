@@ -901,6 +901,8 @@ int main(int argc, const char * argv[]) {
 					printf("Error: %s\n", "the mp4 file couln't be opened.");
 					return -1;
 				}
+				
+				currentMovie.title = inputFullname;
 				[skippedMovies addObject:currentMovie];
 				skip=YES;
 			}
@@ -947,7 +949,6 @@ int main(int argc, const char * argv[]) {
 						if ([key isEqualToString:@"Release Date"]) {
 							currentMovie.releasedate = tag;
 							currentMovie.year = [currentMovie.releasedate substringWithRange: NSMakeRange (0, 4)];
-							
 						}
 						
 						if ([key isEqualToString:@"iTunes Country"])
@@ -1000,11 +1001,7 @@ int main(int argc, const char * argv[]) {
 							}
 							currentMovie.producers = actors;
 						}
-						
-						
 					}
-					
-					
 				}
 				
 				if ([[mp4File metadata] hdVideo]) {

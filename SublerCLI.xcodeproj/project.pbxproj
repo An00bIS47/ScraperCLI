@@ -22,7 +22,6 @@
 		4C1B68CD1A67E83A00A1CABB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1B68AA1A67E67A00A1CABB /* Cocoa.framework */; };
 		4C1B68CE1A67E84100A1CABB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1B68AA1A67E67A00A1CABB /* Cocoa.framework */; };
 		4C1B68CF1A67E84D00A1CABB /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1B68A71A67E24E00A1CABB /* libxml2.dylib */; };
-		4C1B68D21A67EA9800A1CABB /* scraper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C1B68D11A67EA9800A1CABB /* scraper.mm */; };
 		4C1B68D31A67EA9C00A1CABB /* scraper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C1B68D11A67EA9800A1CABB /* scraper.mm */; };
 		4C1B68DE1A67ED0300A1CABB /* iTunesAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1B68711A67E0C800A1CABB /* iTunesAPI.m */; };
 		4C1B68DF1A67ED2B00A1CABB /* TFHpple.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1B68761A67E0C800A1CABB /* TFHpple.m */; };
@@ -460,7 +459,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C1B68D21A67EA9800A1CABB /* scraper.mm in Sources */,
 				CBE9467C12FC5510007E656A /* SublerCLI.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
